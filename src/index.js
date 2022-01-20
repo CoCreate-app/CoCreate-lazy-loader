@@ -1,36 +1,52 @@
-/********************************************************************************
- * Copyright (C) 2020 CoCreate LLC and others.
- *
- *
- * SPDX-License-Identifier: MIT
- ********************************************************************************/
-import observer from "@cocreate/observer"
-import crud from '@cocreate/crud'
+import observer from '@cocreate/observer';
 
-function init() {
-    let elements = document.querySelectorAll(selectors);
-    initElements(elements);
+export function addComponent(key, component) {
+    this[key] = component;
 }
 
-function initElements(elements) {
-    for(let element of elements)
-        initElement(element);
+export function removeComponent(key) {
+    if (this[key]) {}
 }
 
-function initElement(element) {
-    const { collection, document_id, name, isRealtime, isCrdt } = crud.getAttr(element);
-    // Do something...
-}
+function listen(callback, selector) {
 
-init();
-
-observer.init({
-    name: 'CoCreateBoilerplateAddedNodes',
-    observe: ['addedNodes'],
-    target: selectors,
-    callback (mutation) {
-        initElement(mutation.target);
+    function observerCallback({ target }) {
+        let isInit = target.querySelector(selector)
+        if (isInit) {
+            callback()
+            // console.log('lazyloaded', selector)
+            observer.uninit(observerCallback)
+        }
     }
-});
 
-export default {initElement};
+    observer.init({
+        name: 'lazyloadObserver',
+        observe: ['childList'],
+        target: selector,
+        callback: observerCallback
+    })
+
+    // todo: observer add attributes
+}
+
+export async function lazyLoad(name, selector, cb) {
+    async function cc() {
+        let component = (await cb()).default;
+        Object.assign(window.CoCreate, {
+            [name]: component
+        })
+    }
+
+    if (document.querySelector(selector))
+        await cc()
+    else
+        listen(cc, selector)
+
+}
+
+export async function dependency(name, promise) {
+    let module = await promise;
+    Object.assign(window.CoCreate, {
+        [name]: module.default
+    });
+}
