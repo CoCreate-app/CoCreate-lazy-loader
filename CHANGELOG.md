@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.0.1...v1.0.2) (2022-02-03)
+
+
+### Bug Fixes
+
+* replaced show and hide class hidden with attribute hidden ([112ddfd](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/112ddfdeaec7f0b40064423d2d31401176c407b8))
+
 ## [1.0.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.0.0...v1.0.1) (2022-02-01)
 
 
