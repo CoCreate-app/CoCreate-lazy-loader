@@ -1,3 +1,10 @@
+## [1.0.7](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.0.6...v1.0.7) (2022-05-06)
+
+
+### Bug Fixes
+
+* update config organization_Id to organization_id ([5636e37](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/5636e37ba01698cfbd312024be9f75f0680009e6))
+
 ## [1.0.6](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.0.5...v1.0.6) (2022-02-24)
 
 
