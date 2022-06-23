@@ -11,12 +11,12 @@ export function removeComponent(key) {
 function listen(callback, selector) {
 
     function observerCallback({ target }) {
-        let isInit = target.querySelector(selector)
-        if (isInit) {
+        // let isInit = target.querySelector(selector)
+        // if (isInit) {
             callback()
             // console.log('lazyloaded', selector)
             observer.uninit(observerCallback)
-        }
+        // }
     }
 
     observer.init({
@@ -26,7 +26,32 @@ function listen(callback, selector) {
         callback: observerCallback
     })
 
-    // todo: observer add attributes
+    let selectorAttributes  = [];
+    let attributes = selector.split(",")
+    for (let attribute of attributes){
+        let attr = attribute.trim()
+        if (attr.startsWith("[")) {
+            let pos = attr.indexOf("*")
+            if (pos == -1)
+                pos = attr.indexOf("=")
+            if (pos !== -1) {
+                attr = attr.slice(1, pos)
+            } else {
+                attr = attr.slice(1, -1)
+            }
+            selectorAttributes.push(attr)
+        }
+
+    }
+    if (selectorAttributes.length > 0)
+        observer.init({ 
+            name: 'lazyloadAttributeObserver', 
+            observe: ['attributes'],
+            attributeName: selectorAttributes,
+            target: selector,
+            callback: observerCallback
+        });
+    
 }
 
 export async function lazyLoad(name, selector, cb) {
