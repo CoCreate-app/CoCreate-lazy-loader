@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.0.10...v1.1.0) (2022-06-23)
+
+
+### Features
+
+* observe attributes if match found lazyload component ([755c88b](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/755c88b01222ebe85e51aa633be313a762e2d102))
+
 ## [1.0.10](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.0.9...v1.0.10) (2022-06-18)
 
 
