@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.1.0...v1.1.1) (2022-07-03)
+
+
+### Bug Fixes
+
+* update pass-fetch and pass-filter attributes ([ef36769](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/ef36769bc387b51e0f6a7a231db20eb74cfad98f))
+
 # [1.1.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.0.10...v1.1.0) (2022-06-23)
 
 
