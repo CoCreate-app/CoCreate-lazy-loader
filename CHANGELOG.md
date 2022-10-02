@@ -1,3 +1,10 @@
+## [1.1.10](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.1.9...v1.1.10) (2022-10-02)
+
+
+### Bug Fixes
+
+* bump @cocreate/hosting and @cocreate/socket-client ([8e243c1](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/8e243c1288f8486c6609e13780d0de994b236c32))
+
 ## [1.1.9](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.1.8...v1.1.9) (2022-10-01)
 
 
