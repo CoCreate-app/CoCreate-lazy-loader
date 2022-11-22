@@ -1,3 +1,11 @@
+## [1.1.16](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.1.15...v1.1.16) (2022-11-22)
+
+
+### Bug Fixes
+
+* apply src: {{source}} to CoCreate.config ([580028c](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/580028c5d3c35b47cab3525b7d4f2646caef0096))
+* workflow docs ([e6f93fc](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/e6f93fc2de267b649a350611b01d0c2a5975eb7c))
+
 ## [1.1.15](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.1.14...v1.1.15) (2022-11-21)
 
 
