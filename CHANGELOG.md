@@ -1,3 +1,10 @@
+## [1.1.18](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.1.17...v1.1.18) (2022-11-24)
+
+
+### Bug Fixes
+
+* bump depenedencies ([eef1a4b](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/eef1a4bae06d61573ec649bbc7438ebd45f86d31))
+
 ## [1.1.17](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.1.16...v1.1.17) (2022-11-23)
 
 
