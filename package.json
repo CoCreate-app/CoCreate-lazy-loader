@@ -1,6 +1,6 @@
 {
   "name": "@cocreate/lazy-loader",
-  "version": "1.1.25",
+  "version": "1.1.26",
   "description": "A simple lazy-loader component in vanilla javascript. Easily configured using HTML5 data-attributes and/or JavaScript API.",
   "keywords": [
     "lazy-loader",
@@ -20,7 +20,9 @@
     "html5-framework",
     "javascript-framework"
   ],
-  "publishConfig": { "access": "public" },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "start": "npx webpack --config webpack.config.js",
     "build": "NODE_ENV=production npx webpack --config webpack.config.js",
