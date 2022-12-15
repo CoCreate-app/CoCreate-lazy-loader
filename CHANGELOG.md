@@ -1,3 +1,10 @@
+## [1.1.33](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.1.32...v1.1.33) (2022-12-15)
+
+
+### Bug Fixes
+
+* add missing dev dependency style-loader ([afbe1c1](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/afbe1c12f20e01c655c3a65926f422259a6f7d2b))
+
 ## [1.1.32](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.1.31...v1.1.32) (2022-12-13)
 
 
