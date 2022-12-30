@@ -1,3 +1,10 @@
+## [1.1.42](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.1.41...v1.1.42) (2022-12-30)
+
+
+### Bug Fixes
+
+* update config sources to use template  braces with entry on src ([795e413](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/795e413e1aa5a570fcba85bc17ecb0e8bb3f5d32))
+
 ## [1.1.41](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.1.40...v1.1.41) (2022-12-29)
 
 
