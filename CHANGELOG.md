@@ -1,3 +1,10 @@
+## [1.1.44](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.1.43...v1.1.44) (2023-01-01)
+
+
+### Bug Fixes
+
+* docs sanbox overflow ([7f5fd49](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/7f5fd499e8cb03f83249b2b624bec97e20391a7a))
+
 ## [1.1.43](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.1.42...v1.1.43) (2022-12-31)
 
 
