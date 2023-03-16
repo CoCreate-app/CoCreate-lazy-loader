@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.1.54...v1.2.0) (2023-03-16)
+
+
+### Features
+
+* replaced get-value and set-value with a super charged version of CoCreate-events ([ce667cc](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/ce667cc575be6e0eb56f811064c2c98adcd2cc65))
+
 ## [1.1.54](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.1.53...v1.1.54) (2023-02-01)
 
 
