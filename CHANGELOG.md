@@ -1,3 +1,10 @@
+## [1.2.4](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.2.3...v1.2.4) (2023-04-11)
+
+
+### Bug Fixes
+
+* renamed domains to hosts ([bf7cb7d](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/bf7cb7d38f5b637f05ae8e372a49d7c418dadddb))
+
 ## [1.2.3](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.2.2...v1.2.3) (2023-03-30)
 
 
