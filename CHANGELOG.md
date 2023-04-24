@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.2.6...v1.3.0) (2023-04-24)
+
+
+### Features
+
+* added pwa manifest ([d9654fb](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/d9654fbb9c803ca385f6e78c900a29b5cf23d337))
+
 ## [1.2.6](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.2.5...v1.2.6) (2023-04-11)
 
 
