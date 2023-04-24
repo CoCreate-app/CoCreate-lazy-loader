@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.0...v1.3.1) (2023-04-24)
+
+
+### Bug Fixes
+
+* removed uglifyjs-webpack-plugin ([d559a31](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/d559a312c533bccd8352736f43c883d9db25b41c))
+
 # [1.3.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.2.6...v1.3.0) (2023-04-24)
 
 
