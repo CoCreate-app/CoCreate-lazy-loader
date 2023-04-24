@@ -1,3 +1,11 @@
+## [1.3.3](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.2...v1.3.3) (2023-04-24)
+
+
+### Bug Fixes
+
+* updated worrkflows to v3 and node version 16 ([17d53a1](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/17d53a15f8ea8df467f0e0c668b71be0abd50eae))
+* workflow node version updated  16 ([017ca62](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/017ca6248b051a221902bc1ec15764cd06dcb182))
+
 ## [1.3.2](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.1...v1.3.2) (2023-04-24)
 
 
