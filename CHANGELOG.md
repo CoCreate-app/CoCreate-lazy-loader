@@ -1,3 +1,12 @@
+## [1.3.4](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.3...v1.3.4) (2023-04-30)
+
+
+### Bug Fixes
+
+* fullscreen target updated to fullscreen fullscreen-target ([7ab305f](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/7ab305fb87e31ff1f73f533bc5bd51225fd6ce2a))
+* package-lock.json and pnpm-lock.yaml added to .gitignore ([2860da1](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/2860da13dfa4a82a5048951ec011186ef9ce5f4c))
+* removed toogle fullscreen icons. now using css content ([ead687e](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/ead687e94040343b55309af848db3f06381bbd49))
+
 ## [1.3.3](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.2...v1.3.3) (2023-04-24)
 
 
