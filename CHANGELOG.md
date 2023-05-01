@@ -1,3 +1,10 @@
+## [1.3.6](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.5...v1.3.6) (2023-05-01)
+
+
+### Bug Fixes
+
+* update manifest.json to manifest.webmanifest ([b605f27](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/b605f27956d535d00f849ec0c8482c827eb07fe0))
+
 ## [1.3.5](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.4...v1.3.5) (2023-05-01)
 
 
