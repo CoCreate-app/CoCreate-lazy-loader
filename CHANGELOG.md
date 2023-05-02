@@ -1,3 +1,10 @@
+## [1.3.7](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.6...v1.3.7) (2023-05-02)
+
+
+### Bug Fixes
+
+* removed unused functions ([f440ea8](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/f440ea8f713ca918ac08a7d4ae0a92255880cd21))
+
 ## [1.3.6](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.5...v1.3.6) (2023-05-01)
 
 
