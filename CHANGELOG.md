@@ -1,3 +1,11 @@
+## [1.3.9](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.8...v1.3.9) (2023-05-10)
+
+
+### Bug Fixes
+
+* apikey renamed to key ([85a1bad](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/85a1bad09b881c81d2b4e8779156643dbce11487))
+* apikey renamed to key ([b9830d8](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/b9830d8cac1691070c0188e220e0611c023daf06))
+
 ## [1.3.8](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.7...v1.3.8) (2023-05-06)
 
 
