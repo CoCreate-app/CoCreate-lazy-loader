@@ -1,3 +1,10 @@
+## [1.3.10](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.9...v1.3.10) (2023-05-19)
+
+
+### Bug Fixes
+
+* update packages to latest version. This commit updates various packages in the dependencies section of the package.json file to their latest published versions, thereby fixing multiple bugs and improving overall performance. ([cc3a9dd](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/cc3a9dd3cd2f1ae1766112121a2d1f1b1fa5d1f3))
+
 ## [1.3.9](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.8...v1.3.9) (2023-05-10)
 
 
