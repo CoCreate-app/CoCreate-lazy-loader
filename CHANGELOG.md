@@ -1,3 +1,10 @@
+## [1.3.15](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.14...v1.3.15) (2023-06-04)
+
+
+### Bug Fixes
+
+* Refactor CoCreate.config.js to remove hard-coded credentials ([26832e9](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/26832e9cb1907b63e8abbc3b1ad60e9a6da2f802))
+
 ## [1.3.14](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.13...v1.3.14) (2023-06-04)
 
 
