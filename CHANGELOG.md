@@ -1,3 +1,11 @@
+## [1.3.14](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.13...v1.3.14) (2023-06-04)
+
+
+### Bug Fixes
+
+* replaced secert GITHUB_TOKEN with GITHUB ([bbdf7cf](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/bbdf7cf54c7c4213301fe9b0dd8ce488ee7878d8))
+* Update dependencies versions for [@cocreate](https://github.com/cocreate) libraries ([89fa0da](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/89fa0daa89eb29ee599ce368a25331856a2d0d5a))
+
 ## [1.3.13](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.12...v1.3.13) (2023-06-04)
 
 
