@@ -1,3 +1,10 @@
+## [1.3.13](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.12...v1.3.13) (2023-06-04)
+
+
+### Bug Fixes
+
+* **semantic-release:** worklow error solved by running node version 14 ([c8c6575](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/c8c6575d8adca1486310800a530b21606a8a6165))
+
 ## [1.3.12](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.11...v1.3.12) (2023-06-02)
 
 
