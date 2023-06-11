@@ -1,3 +1,10 @@
+## [1.3.18](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.17...v1.3.18) (2023-06-11)
+
+
+### Bug Fixes
+
+* renamed hosts to host. the value can be a string or an array of strings ([da939dc](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/da939dc542454948283e62a9922de40122ab90c2))
+
 ## [1.3.17](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.16...v1.3.17) (2023-06-10)
 
 
