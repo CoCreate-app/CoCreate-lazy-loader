@@ -1,3 +1,10 @@
+## [1.3.21](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.20...v1.3.21) (2023-06-11)
+
+
+### Bug Fixes
+
+* postintall error ([ee40ae8](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/ee40ae8ea28afcb176686a6e20c1142c57701c71))
+
 ## [1.3.20](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.19...v1.3.20) (2023-06-11)
 
 
