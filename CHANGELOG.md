@@ -1,3 +1,10 @@
+## [1.3.23](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.22...v1.3.23) (2023-06-11)
+
+
+### Bug Fixes
+
+* testing workflow ([ca9a807](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/ca9a807a3db79c48d8ec8586db08e6f5cd3eef54))
+
 ## [1.3.22](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.21...v1.3.22) (2023-06-11)
 
 
