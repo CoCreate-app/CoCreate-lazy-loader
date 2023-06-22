@@ -5,9 +5,9 @@ function listen(callback, selector) {
     function observerCallback({ target }) {
         // let isInit = target.querySelector(selector)
         // if (isInit) {
-            callback()
-            // console.log('lazyloaded', selector)
-            observer.uninit(observerCallback)
+        callback()
+        // console.log('lazyloaded', selector)
+        observer.uninit(observerCallback)
         // }
     }
 
@@ -18,9 +18,9 @@ function listen(callback, selector) {
         callback: observerCallback
     })
 
-    let selectorAttributes  = [];
+    let selectorAttributes = [];
     let attributes = selector.split(",")
-    for (let attribute of attributes){
+    for (let attribute of attributes) {
         let attr = attribute.trim()
         if (attr.startsWith("[")) {
             let pos = attr.indexOf("*")
@@ -36,14 +36,14 @@ function listen(callback, selector) {
 
     }
     if (selectorAttributes.length > 0)
-        observer.init({ 
-            name: 'lazyloadAttributeObserver', 
+        observer.init({
+            name: 'lazyloadAttributeObserver',
             observe: ['attributes'],
             attributeName: selectorAttributes,
             target: selector,
             callback: observerCallback
         });
-    
+
 }
 
 export async function lazyLoad(name, selector, callback) {
