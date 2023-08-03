@@ -4,8 +4,8 @@ module.exports = {
     "host": "",
     "sources": [
         {
-            "collection": "files",
-            "document": {
+            "array": "files",
+            "object": {
                 "_id": "637ca44750234ef1671ce319",
                 "name": "index.html",
                 "path": "/docs/lazy-loader/index.html",
