@@ -1,3 +1,18 @@
+# [1.4.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.29...v1.4.0) (2023-08-16)
+
+
+### Bug Fixes
+
+* crud attributes renamed ([2e8ad11](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/2e8ad111e9b972d9e4bb9e8339b413f96cb3a86d))
+* replace -target -selector ([0c13543](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/0c135434255f484e7b9fed23a49456872c167b79))
+* updated actions callback data object ([6d958b3](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/6d958b3bbaf2c62b88126e402ada5d50772e746d))
+* webpack.config and package.json make use of mode=production instead of process.env ([7dd3233](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/7dd3233b04f4050d15f1a6c1a251301bd48e4eb8))
+
+
+### Features
+
+* name attribute and variable renamed to key ([46a524f](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/46a524f1942ad417619481d20f5eaff65cd0a498))
+
 ## [1.3.29](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.3.28...v1.3.29) (2023-06-14)
 
 
