@@ -1,3 +1,12 @@
+## [1.5.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.5.0...v1.5.1) (2023-08-21)
+
+
+### Bug Fixes
+
+* /dist/CoCreate.js updated to https://CoCreate.app/dist/CoCreate.js ([cfcfb41](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/cfcfb4103eae826f9313835f7aeeb4f648aaab70))
+* replace cdn with /dist ([000f702](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/000f702f5abfac7a0f2d48080b6e71cf12fc338a))
+* update file uploader ([4cad79a](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/4cad79ab2293bc27c52f922c541d630826038b8f))
+
 # [1.5.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.4.0...v1.5.0) (2023-08-17)
 
 
