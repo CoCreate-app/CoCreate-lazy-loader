@@ -8,17 +8,16 @@ module.exports = {
             "object": {
                 "_id": "637ca44750234ef1671ce319",
                 "name": "index.html",
-                "path": "/docs/lazy-loader/index.html",
+                "path": "/docs/lazy-loader",
+                "pathname": "/docs/lazy-loader/index.html",
                 "src": "{{./docs/index.html}}",
                 "host": [
                     "*",
                     "general.cocreate.app"
                 ],
-                "directory": "/docs/lazy-loader",
-                "parentDirectory": "{{parentDirectory}}",
+                "directory": "lazy-loader",
                 "content-type": "{{content-type}}",
-                "public": "true",
-                "website_id": "644d4bff8036fb9d1d1fd69c"
+                "public": "true"
             }
         }
     ]
