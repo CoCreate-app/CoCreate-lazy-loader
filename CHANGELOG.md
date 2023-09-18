@@ -1,3 +1,11 @@
+## [1.6.2](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.6.1...v1.6.2) (2023-09-18)
+
+
+### Bug Fixes
+
+*  Add path and pathname ([41a74ea](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/41a74ea0d20f78ebb79be8ee1b8794d43cd8ab4a))
+* Update CoCreate depndencies to latest versions ([22db744](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/22db7443933a155135dc111a55494cfa72a849bd))
+
 ## [1.6.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.6.0...v1.6.1) (2023-08-21)
 
 
