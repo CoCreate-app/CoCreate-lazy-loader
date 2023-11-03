@@ -1,3 +1,11 @@
+## [1.6.7](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.6.6...v1.6.7) (2023-11-03)
+
+
+### Bug Fixes
+
+* favicon.ico path ([9a18f36](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/9a18f36d977ff6b36086719bdaa11f5b52892806))
+* update dependencies to the lates versions ([52035aa](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/52035aab80f4886177dbd43bc697a1067829ee00))
+
 ## [1.6.6](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.6.5...v1.6.6) (2023-10-25)
 
 
