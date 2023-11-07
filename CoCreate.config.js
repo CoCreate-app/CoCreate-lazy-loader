@@ -12,8 +12,7 @@ module.exports = {
                 "pathname": "/docs/lazy-loader/index.html",
                 "src": "{{./docs/index.html}}",
                 "host": [
-                    "*",
-                    "general.cocreate.app"
+                    "*"
                 ],
                 "directory": "lazy-loader",
                 "content-type": "{{content-type}}",
