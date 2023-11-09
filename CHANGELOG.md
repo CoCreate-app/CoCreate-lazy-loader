@@ -1,3 +1,11 @@
+## [1.6.8](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.6.7...v1.6.8) (2023-11-09)
+
+
+### Bug Fixes
+
+* meta name typo ([db6a996](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/db6a996327ceffe64dbbc26ecc71a5cd44265d6c))
+* update host ([8f5997b](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/8f5997b775e136c6772912d4eaba0caf283189b4))
+
 ## [1.6.7](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.6.6...v1.6.7) (2023-11-03)
 
 
