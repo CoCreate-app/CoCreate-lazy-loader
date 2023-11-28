@@ -53,7 +53,7 @@ class CoCreateLazyLoader {
                 const valideUrl = new URL(`http://${req.headers.host}${req.url}`);
                 const hostname = valideUrl.hostname;
 
-                let organization = hosts.get(hostname);
+                let organization = hosts[hostname];
                 if (!organization) {
                     let org = await this.crud.send({
                         method: 'object.read',
