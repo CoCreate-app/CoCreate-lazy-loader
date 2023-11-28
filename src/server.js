@@ -37,12 +37,13 @@ class CoCreateLazyLoader {
         // TODO: return the value so it can be applied directly to modules
         // this.modules[key] = await Config('modules', false, false)
 
-        const config = await Config('modules', false, false)
-        if (!config)
+        this.modules = await Config('modules', false, false)
+        if (!this.modules)
             return
+        else
+            this.modules = this.modules.modules
 
-        for (let name of Object.keys(config.modules)) {
-            this.modules[name] = config.modules[name];
+        for (let name of Object.keys(this.modules)) {
             this.wsManager.on(this.modules[name].event, async (data) => {
                 this.executeScriptWithTimeout(name, data)
             });
@@ -73,14 +74,15 @@ class CoCreateLazyLoader {
                     } else {
                         organization = org.object[0]
                         organizations[organization._id] = organization
-                        hosts[hostname] = organization
                     }
                 }
+
+                hosts[hostname] = organization
 
                 if (valideUrl.pathname.startsWith('/webhooks/')) {
                     let name = req.url.split('/')[2]; // Assuming URL structure is /webhook/name/...
                     if (this.modules[name]) {
-                        this.executeScriptWithTimeout(name, { req, res, crud: this.crud, organization, valideUrl })
+                        this.executeScriptWithTimeout(name, { req, res, crud: this.crud, organization, valideUrl, organization_id: data.organization })
                     } else {
                         // Handle unknown module or missing webhook method
                         res.writeHead(404, { 'Content-Type': 'application/json' });
