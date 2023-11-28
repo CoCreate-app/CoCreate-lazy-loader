@@ -1,14 +1,18 @@
-const EventEmitter = require('events');
-const eventEmitter = new EventEmitter();
 const fs = require('fs').promises;
 const path = require('path');
 const vm = require('vm');
 const Config = require("@cocreate/config");
+const { URL } = require('url');
+
+const organizations = {};
+const hosts = {};
 
 class CoCreateLazyLoader {
-    constructor(crud) {
+    constructor(server, crud, files) {
+        this.server = server
         this.wsManager = crud.wsManager
         this.crud = crud
+        this.files = files
         this.exclusion = { ...require.cache };
         this.modules = {};
         this.init()
@@ -30,69 +34,159 @@ class CoCreateLazyLoader {
         // Call this function at the start of your application
         createScriptsDirectory();
 
-        const config = await Config('lazyload', false, false)
+        // TODO: return the value so it can be applied directly to modules
+        // this.modules[key] = await Config('modules', false, false)
+
+        const config = await Config('modules', false, false)
         if (!config)
             return
 
-        for (let key of Object.keys(config.lazyload)) {
-            let moduleConfig = config.lazyload[key];
-            eventEmitter.on(moduleConfig.event, async () => {
-                this.executeScriptWithTimeout(key, moduleConfig)
+        for (let name of Object.keys(config.modules)) {
+            this.modules[name] = config.modules[name];
+            this.wsManager.on(this.modules[name].event, async (data) => {
+                this.executeScriptWithTimeout(name, data)
             });
         }
 
-        // eventEmitter.emit('openai');
+        this.server.on('request', async (req, res) => {
+            try {
+                const valideUrl = new URL(`http://${req.headers.host}${req.url}`);
+                const hostname = valideUrl.hostname;
+
+                let organization = hosts.get(hostname);
+                if (!organization) {
+                    let org = await this.crud.send({
+                        method: 'object.read',
+                        array: 'organizations',
+                        $filter: {
+                            query: [
+                                { key: "host", value: [hostname], operator: "$in" }
+                            ]
+                        },
+                        organization_id: process.env.organization_id
+                    })
+
+                    if (!org || !org.object || !org.object[0]) {
+                        if (!hostNotFound)
+                            hostNotFound = await getDefaultFile('/hostNotFound.html')
+                        return sendResponse(hostNotFound.object[0].src, 404, { 'Content-Type': 'text/html', 'storage': organization.storage })
+                    } else {
+                        organization = org.object[0]
+                        organizations[organization._id] = organization
+                        hosts[hostname] = organization
+                    }
+                }
+
+                if (valideUrl.pathname.startsWith('/webhooks/')) {
+                    let name = req.url.split('/')[2]; // Assuming URL structure is /webhook/name/...
+                    if (this.modules[name]) {
+                        this.executeScriptWithTimeout(name, { req, res, crud: this.crud, organization, valideUrl })
+                    } else {
+                        // Handle unknown module or missing webhook method
+                        res.writeHead(404, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: 'Not found' }));
+                    }
+
+                } else {
+                    this.files.send(req, res, this.crud, organization, valideUrl)
+                }
+
+            } catch (error) {
+                res.writeHead(400, { 'Content-Type': 'text/plain' });
+                res.end('Invalid host format');
+            }
+
+
+        })
 
     }
 
-    async executeScriptWithTimeout(moduleName, moduleConfig) {
+    async executeScriptWithTimeout(name, data) {
         try {
-            if (!moduleConfig.content) {
-                if (moduleConfig.path)
-                    moduleConfig.content = await require(moduleConfig.path)
+            if (!this.modules[name].content) {
+                if (this.modules[name].path)
+                    this.modules[name].content = await require(this.modules[name].path)
                 else {
                     try {
-                        const scriptPath = path.join(scriptsDirectory, `${moduleName}.js`);
+                        const scriptPath = path.join(scriptsDirectory, `${name}.js`);
                         await fs.access(scriptPath);
-                        moduleConfig.content = await fs.readFile(scriptPath, 'utf8');
+                        this.modules[name].content = await fs.readFile(scriptPath, 'utf8');
                     } catch {
-                        moduleConfig.content = await fetchScriptFromDatabaseAndSave(moduleName, moduleConfig);
+                        this.modules[name].content = await fetchScriptFromDatabaseAndSave(name, this.modules[name], data);
                     }
                 }
             }
 
-            if (moduleConfig.unload === false || moduleConfig.unload === 'false')
+            if (this.modules[name].content) {
+                data.apis = await this.getApiKey(data.organization_id, name)
+                data = await this.modules[name].content.send(data)
+                delete data.apis
+                if (data.socket)
+                    this.wsManager.send(data)
+            } else
                 return
-            else if (moduleConfig.unload === true || moduleConfig.unload === 'true')
+
+            if (this.modules[name].unload === false || this.modules[name].unload === 'false')
+                return
+            else if (this.modules[name].unload === true || this.modules[name].unload === 'true')
                 console.log('config should unload after completeion ')
-            else if (moduleConfig.unload = parseInt(moduleConfig.unload, 10)) {
+            else if (this.modules[name].unload = parseInt(this.modules[name].unload, 10)) {
                 // Check if the script is already loaded
-                if (moduleConfig.timeout) {
-                    clearTimeout(moduleConfig.timeout);
-                } else if (!moduleConfig.path) {
+                if (this.modules[name].timeout) {
+                    clearTimeout(this.modules[name].timeout);
+                } else if (!this.modules[name].path) {
                     // Execute the script
-                    moduleConfig.context = new vm.createContext({});
-                    const script = new vm.Script(moduleConfig.context);
+                    this.modules[name].context = new vm.createContext({});
+                    const script = new vm.Script(this.modules[name].context);
                     script.runInContext(context);
                 }
 
                 // Reset or set the timeout
                 const timeout = setTimeout(() => {
-                    delete this.modules[moduleName]
-                    delete moduleConfig.timeout
-                    delete moduleConfig.context
-                    delete moduleConfig.content
-                    console.log(`Module ${moduleName} removed due to inactivity.`);
-                    clearModuleCache(moduleName);
+                    // delete this.modules[name]
+                    delete this.modules[name].timeout
+                    delete this.modules[name].context
+                    delete this.modules[name].content
+                    console.log(`Module ${name} removed due to inactivity.`);
+                    clearModuleCache(name);
 
-                }, moduleConfig.unload);
+                }, this.modules[name].unload);
 
-                moduleConfig.timeout = timeout
+                this.modules[name].timeout = timeout
             }
         } catch (error) {
             console.log(error)
         }
     }
+
+    async getApiKey(organization_id, name) {
+        organizations[organization_id] = this.getOrganization(organization_id, name)
+        organizations[organization_id] = await organizations[organization_id]
+        return organizations[organization_id][name]
+    }
+
+    async getOrganization(organization_id) {
+        let organization = await this.crud.send({
+            method: 'object.read',
+            database: organization_id,
+            array: 'organizations',
+            object: [{ _id: organization_id }],
+            organization_id
+        })
+
+        if (organization
+            && organization.object
+            && organization.object[0]) {
+            if (organization.object[0].apis) {
+                return organization.object[0].apis
+            } else
+                return { error: 'No apis defined could not be found' }
+        } else {
+            return { serverOrganization: false, error: 'An organization could not be found' }
+        }
+
+    }
+
 
 }
 
@@ -106,7 +200,7 @@ function getModuleDependencies(modulePath) {
     return moduleObj.children.map(child => child.id);
 }
 
-function isModuleUsedElsewhere(modulePath, moduleName) {
+function isModuleUsedElsewhere(modulePath, name) {
     return Object.keys(require.cache).some(path => {
         const moduleObj = require.cache[path];
         // return moduleObj.children.some(child => child.id === modulePath && path !== modulePath);
@@ -119,39 +213,39 @@ function isModuleUsedElsewhere(modulePath, moduleName) {
     });
 }
 
-function clearModuleCache(moduleName) {
+function clearModuleCache(name) {
     try {
-        const modulePath = require.resolve(moduleName);
+        const modulePath = require.resolve(name);
         const dependencies = getModuleDependencies(modulePath);
 
         // Check if the module is a dependency of other modules
         // const moduleObj = require.cache[modulePath];
         // if (moduleObj && moduleObj.parent) {
-        //     console.log(`Module ${moduleName} is a dependency of other modules.`);
+        //     console.log(`Module ${name} is a dependency of other modules.`);
         //     return;
         // }
 
         // Check if the module is used by other modules
-        if (isModuleUsedElsewhere(modulePath, moduleName)) {
-            console.log(`Module ${moduleName} is a dependency of other modules.`);
+        if (isModuleUsedElsewhere(modulePath, name)) {
+            console.log(`Module ${name} is a dependency of other modules.`);
             return;
         }
 
         // Remove the module from the cache
         delete require.cache[modulePath];
-        console.log(`Module ${moduleName} has been removed from cache.`);
+        console.log(`Module ${name} has been removed from cache.`);
         // Recursively clear dependencies from cache
         dependencies.forEach(depPath => {
             clearModuleCache(depPath);
         });
 
     } catch (error) {
-        console.error(`Error clearing module cache for ${moduleName}: ${error.message}`);
+        console.error(`Error clearing module cache for ${name}: ${error.message}`);
     }
 }
 
 // Function to fetch script from database and save to disk
-async function fetchScriptFromDatabaseAndSave(moduleName, moduleConfig) {
+async function fetchScriptFromDatabaseAndSave(name, moduleConfig) {
     let data = {
         method: 'object.read',
         array: moduleConfig.array,
@@ -165,7 +259,7 @@ async function fetchScriptFromDatabaseAndSave(moduleName, moduleConfig) {
         organization_id
     };
 
-    let file = await crud.send(data);
+    let file = await this.crud.send(data);
     let src;
 
     if (file && file.object && file.object[0]) {
@@ -175,7 +269,7 @@ async function fetchScriptFromDatabaseAndSave(moduleName, moduleConfig) {
     }
 
     // Save to disk for future use
-    const scriptPath = path.join(scriptsDirectory, `${moduleName}.js`);
+    const scriptPath = path.join(scriptsDirectory, `${name}.js`);
     await fs.writeFile(scriptPath, src);
 
     return src;
