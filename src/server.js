@@ -34,9 +34,6 @@ class CoCreateLazyLoader {
         // Call this function at the start of your application
         createScriptsDirectory();
 
-        // TODO: return the value so it can be applied directly to modules
-        // this.modules[key] = await Config('modules', false, false)
-
         this.modules = await Config('modules', false, false)
         if (!this.modules)
             return
@@ -82,7 +79,7 @@ class CoCreateLazyLoader {
                 if (valideUrl.pathname.startsWith('/webhooks/')) {
                     let name = req.url.split('/')[2]; // Assuming URL structure is /webhook/name/...
                     if (this.modules[name]) {
-                        this.executeScriptWithTimeout(name, { req, res, crud: this.crud, organization, valideUrl, organization_id: data.organization })
+                        this.executeScriptWithTimeout(name, { req, res, crud: this.crud, organization, valideUrl, organization_id: organization._id })
                     } else {
                         // Handle unknown module or missing webhook method
                         res.writeHead(404, { 'Content-Type': 'application/json' });
