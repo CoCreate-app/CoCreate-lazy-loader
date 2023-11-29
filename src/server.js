@@ -79,7 +79,7 @@ class CoCreateLazyLoader {
                 if (valideUrl.pathname.startsWith('/webhooks/')) {
                     let name = req.url.split('/')[2]; // Assuming URL structure is /webhook/name/...
                     if (this.modules[name]) {
-                        this.executeScriptWithTimeout(name, { req, res, crud: this.crud, organization, valideUrl, organization_id: organization._id })
+                        this.executeScriptWithTimeout(name, { req, res, organization, valideUrl, organization_id: organization._id })
                     } else {
                         // Handle unknown module or missing webhook method
                         res.writeHead(404, { 'Content-Type': 'application/json' });
@@ -118,8 +118,10 @@ class CoCreateLazyLoader {
 
             if (this.modules[name].content) {
                 data.apis = await this.getApiKey(data.organization_id, name)
+                data.crud = this.crud
                 data = await this.modules[name].content.send(data)
                 delete data.apis
+                delete data.crud
                 if (data.socket)
                     this.wsManager.send(data)
             } else
