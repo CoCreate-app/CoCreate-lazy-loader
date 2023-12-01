@@ -1,3 +1,11 @@
+# [1.10.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.9.0...v1.10.0) (2023-12-01)
+
+
+### Features
+
+* get config using CoCreate-config ([8e0b9fc](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/8e0b9fce220c493a1db250cf424345d7708a2e08))
+* lazyload client and server modules ([80e25d6](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/80e25d67d729eaec18775a43bf1ef10cb9141aa8))
+
 # [1.9.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.8.0...v1.9.0) (2023-11-25)
 
 
