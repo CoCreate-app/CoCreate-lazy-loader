@@ -1,3 +1,10 @@
+## [1.11.2](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.11.1...v1.11.2) (2023-12-09)
+
+
+### Bug Fixes
+
+* this.modules ([7839c7f](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/7839c7f73e68f967a20613ffe53b1b3deb4f7f62))
+
 ## [1.11.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.11.0...v1.11.1) (2023-12-09)
 
 
