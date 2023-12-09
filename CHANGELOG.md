@@ -1,3 +1,15 @@
+# [1.11.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.10.0...v1.11.0) (2023-12-09)
+
+
+### Bug Fixes
+
+* add "@cocreate/config" ([bac22b5](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/bac22b5d4e5bafd83e68fe1ca727b184f07e8231))
+
+
+### Features
+
+* handle http and websocket requests ([07b205c](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/07b205c31527e10c55f716a6ea1db243bebcccfd))
+
 # [1.10.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.9.0...v1.10.0) (2023-12-01)
 
 
