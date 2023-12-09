@@ -1,3 +1,10 @@
+## [1.11.3](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.11.2...v1.11.3) (2023-12-09)
+
+
+### Bug Fixes
+
+* organization_id ([6b907e8](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/6b907e86bd64eb6c45abd592f698a615a032b7e7))
+
 ## [1.11.2](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.11.1...v1.11.2) (2023-12-09)
 
 
