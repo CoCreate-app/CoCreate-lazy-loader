@@ -1,3 +1,10 @@
+## [1.11.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.11.0...v1.11.1) (2023-12-09)
+
+
+### Bug Fixes
+
+* hosts.get() converted to object ([c21187b](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/c21187ba2209bae5565078cd8fb1a7fea0b22b4c))
+
 # [1.11.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.10.0...v1.11.0) (2023-12-09)
 
 
