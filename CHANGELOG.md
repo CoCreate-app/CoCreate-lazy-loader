@@ -1,3 +1,10 @@
+## [1.11.4](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.11.3...v1.11.4) (2023-12-10)
+
+
+### Bug Fixes
+
+* handle data.crud object ([15ffb7c](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/15ffb7c407503fd48c22874df455b8256b33b3bb))
+
 ## [1.11.3](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.11.2...v1.11.3) (2023-12-09)
 
 
