@@ -1,6 +1,6 @@
 import observer from '@cocreate/observer';
 
-function listen(callback, selector) {
+function listen(name, callback, selector) {
 
     function observerCallback({ target }) {
         // let isInit = target.querySelector(selector)/testtt
@@ -8,6 +8,7 @@ function listen(callback, selector) {
         callback()
         // console.log('lazyloaded', selector)
         observer.uninit(observerCallback)
+        dispatchComponentLoaded(name)
         // }
     }
 
@@ -50,7 +51,7 @@ export async function lazyLoad(name, selector, callback) {
     if (document.querySelector(selector))
         await dependency(name, await callback())
     else
-        listen(callback, selector)
+        listen(name, callback, selector)
 }
 
 export async function dependency(name, promise) {
@@ -58,4 +59,11 @@ export async function dependency(name, promise) {
     Object.assign(window.CoCreate, {
         [name]: component.default
     });
+    dispatchComponentLoaded(name)
+}
+
+function dispatchComponentLoaded(name) {
+    document.dispatchEvent(new CustomEvent(name + 'Loaded', {
+        detail: { name }
+    }));
 }
