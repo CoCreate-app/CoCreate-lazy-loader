@@ -2,14 +2,14 @@ import observer from '@cocreate/observer';
 
 function listen(name, callback, selector) {
 
-    function observerCallback({ target }) {
-        // let isInit = target.querySelector(selector)/testtt
-        // if (isInit) {
-        callback()
-        // console.log('lazyloaded', selector)
+    async function observerCallback({ target }) {
+        const module = await callback()
         observer.uninit(observerCallback)
+        Object.assign(window.CoCreate, {
+            [name]: module.default || module
+        });
+
         dispatchComponentLoaded(name)
-        // }
     }
 
     observer.init({
@@ -57,7 +57,7 @@ export async function lazyLoad(name, selector, callback) {
 export async function dependency(name, promise) {
     let component = await promise;
     Object.assign(window.CoCreate, {
-        [name]: component.default
+        [name]: component.default || component
     });
     dispatchComponentLoaded(name)
 }
