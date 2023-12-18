@@ -1,3 +1,15 @@
+# [1.12.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.11.4...v1.12.0) (2023-12-18)
+
+
+### Bug Fixes
+
+* assigning modules to window.CoCreate ([15037d8](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/15037d8caf95463e629ab162f9f41008070a3f20))
+
+
+### Features
+
+* dispatch event "<component>Loaded" ([5e489e6](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/5e489e6a9dbf876ee4d17492be713b8dda01811f))
+
 ## [1.11.4](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.11.3...v1.11.4) (2023-12-10)
 
 
