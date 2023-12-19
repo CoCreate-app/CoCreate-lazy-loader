@@ -3,8 +3,14 @@ import observer from '@cocreate/observer';
 function listen(name, callback, selector) {
 
     async function observerCallback({ target }) {
+        if (window.CoCreate[name])
+            return
+        window.CoCreate[name] = {}
+        observer.uninit(observerCallback)
+
         const module = await callback()
         observer.uninit(observerCallback)
+
         Object.assign(window.CoCreate, {
             [name]: module.default || module
         });
@@ -56,6 +62,7 @@ export async function lazyLoad(name, selector, callback) {
 
 export async function dependency(name, promise) {
     let component = await promise;
+
     Object.assign(window.CoCreate, {
         [name]: component.default || component
     });
