@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.12.0...v1.12.1) (2023-12-20)
+
+
+### Bug Fixes
+
+* ensure observer only inits each component once ([9e1f051](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/9e1f0515b792cca169e32d20d18ccbd223dad7c1))
+
 # [1.12.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.11.4...v1.12.0) (2023-12-18)
 
 
