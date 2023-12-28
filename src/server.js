@@ -19,10 +19,10 @@ class CoCreateLazyLoader {
     }
 
     async init() {
-        // Function to create the scripts directory if it doesn't exist
-        async function createScriptsDirectory() {
+        const scriptsDirectory = './scripts';
+
+        if (!await fs.access(scriptsDirectory)) {
             try {
-                const scriptsDirectory = './scripts';
                 await fs.mkdir(scriptsDirectory, { recursive: true });
                 console.log(`Scripts directory created at ${scriptsDirectory}`);
             } catch (error) {
@@ -30,9 +30,6 @@ class CoCreateLazyLoader {
                 throw error; // Halt execution if directory creation fails
             }
         }
-
-        // Call this function at the start of your application
-        createScriptsDirectory();
 
         this.modules = await Config('modules', false, false)
         if (!this.modules)
@@ -76,6 +73,7 @@ class CoCreateLazyLoader {
 
                 hosts[hostname] = organization
 
+                // TODO: handle ssl validation here and creation here
                 if (valideUrl.pathname.startsWith('/webhooks/')) {
                     let name = req.url.split('/')[2]; // Assuming URL structure is /webhook/name/...
                     if (this.modules[name]) {
@@ -94,8 +92,6 @@ class CoCreateLazyLoader {
                 res.writeHead(400, { 'Content-Type': 'text/plain' });
                 res.end('Invalid host format');
             }
-
-
         })
 
     }
@@ -187,7 +183,6 @@ class CoCreateLazyLoader {
         }
 
     }
-
 
 }
 
