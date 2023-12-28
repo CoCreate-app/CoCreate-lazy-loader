@@ -3,6 +3,9 @@ import observer from '@cocreate/observer';
 function listen(name, callback, selector) {
 
     async function observerCallback({ target }) {
+        if (!window.CoCreate)
+            window.CoCreate = {}
+
         if (window.CoCreate[name])
             return
         window.CoCreate[name] = {}
@@ -10,10 +13,7 @@ function listen(name, callback, selector) {
 
         const module = await callback()
         observer.uninit(observerCallback)
-
-        Object.assign(window.CoCreate, {
-            [name]: module.default || module
-        });
+        window.CoCreate[name] = module.default || module
 
         dispatchComponentLoaded(name)
     }
@@ -62,10 +62,10 @@ export async function lazyLoad(name, selector, callback) {
 
 export async function dependency(name, promise) {
     let component = await promise;
+    if (!window.CoCreate)
+        window.CoCreate = {}
 
-    Object.assign(window.CoCreate, {
-        [name]: component.default || component
-    });
+    window.CoCreate[name] = component.default || component
     dispatchComponentLoaded(name)
 }
 
