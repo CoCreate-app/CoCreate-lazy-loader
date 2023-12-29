@@ -11,6 +11,7 @@ class CoCreateLazyLoader {
     constructor(server, crud, files) {
         this.server = server
         this.wsManager = crud.wsManager
+        this.acme = crud.wsManager.acme
         this.crud = crud
         this.files = files
         this.exclusion = { ...require.cache };
@@ -73,7 +74,8 @@ class CoCreateLazyLoader {
 
                 hosts[hostname] = organization
 
-                // TODO: handle ssl validation here and creation here
+                await this.acme.checkCertificate(hostname, organization._id)
+
                 if (valideUrl.pathname.startsWith('/webhooks/')) {
                     let name = req.url.split('/')[2]; // Assuming URL structure is /webhook/name/...
                     if (this.modules[name]) {
