@@ -66,6 +66,7 @@ class CoCreateLazyLoader {
                     })
 
                     if (!org || !org.object || !org.object[0]) {
+                        // TODO: hostNotFound is not defined
                         if (!hostNotFound)
                             hostNotFound = await getDefaultFile('/hostNotFound.html')
                         return sendResponse(hostNotFound.object[0].src, 404, { 'Content-Type': 'text/html', 'storage': organization.storage })
@@ -77,7 +78,7 @@ class CoCreateLazyLoader {
 
                 hosts[hostname] = organization
 
-                await this.acme.checkCertificate(hostname, organization._id)
+                await this.acme.checkCertificate(hostname, organization._id, req.url)
 
                 if (valideUrl.pathname.startsWith('/webhooks/')) {
                     let name = req.url.split('/')[2]; // Assuming URL structure is /webhook/name/...
