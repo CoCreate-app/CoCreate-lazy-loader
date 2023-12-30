@@ -22,7 +22,10 @@ class CoCreateLazyLoader {
     async init() {
         const scriptsDirectory = './scripts';
 
-        if (!await fs.access(scriptsDirectory)) {
+        try {
+            await fs.access(directory);
+            console.log("The directory exists.");
+        } catch (error) {
             try {
                 await fs.mkdir(scriptsDirectory, { recursive: true });
                 console.log(`Scripts directory created at ${scriptsDirectory}`);
