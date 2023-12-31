@@ -1,3 +1,15 @@
+# [1.13.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.12.2...v1.13.0) (2023-12-31)
+
+
+### Bug Fixes
+
+* create script directory once ([a63b450](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/a63b4508f84ebcdad0f485de75287d2334b548b3))
+
+
+### Features
+
+* Added '@cocreate/acme' for dynamic ssl management ([5916bd5](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/5916bd53c7165b78274556f5717c84f4c8e1e512))
+
 ## [1.12.2](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.12.1...v1.12.2) (2023-12-28)
 
 
