@@ -47,59 +47,62 @@ class CoCreateLazyLoader {
             });
         }
 
-        this.server.on('request', async (req, res) => {
-            try {
-                const valideUrl = new URL(`http://${req.headers.host}${req.url}`);
-                const hostname = valideUrl.hostname;
+        this.server.https.on('request', (req, res) => this.request(req, res))
+        this.server.http.on('request', (req, res) => this.request(req, res))
 
-                let organization = hosts[hostname];
-                if (!organization) {
-                    let org = await this.crud.send({
-                        method: 'object.read',
-                        array: 'organizations',
-                        $filter: {
-                            query: [
-                                { key: "host", value: [hostname], operator: "$in" }
-                            ]
-                        },
-                        organization_id: process.env.organization_id
-                    })
+    }
 
-                    if (!org || !org.object || !org.object[0]) {
-                        // TODO: hostNotFound is not defined
-                        if (!hostNotFound)
-                            hostNotFound = await getDefaultFile('/hostNotFound.html')
-                        return sendResponse(hostNotFound.object[0].src, 404, { 'Content-Type': 'text/html', 'storage': organization.storage })
-                    } else {
-                        organization = org.object[0]
-                        organizations[organization._id] = organization
-                    }
-                }
+    async request(req, res) {
+        try {
+            const valideUrl = new URL(`http://${req.headers.host}${req.url}`);
+            const hostname = valideUrl.hostname;
 
-                hosts[hostname] = organization
+            let organization = hosts[hostname];
+            if (!organization) {
+                let org = await this.crud.send({
+                    method: 'object.read',
+                    array: 'organizations',
+                    $filter: {
+                        query: [
+                            { key: "host", value: [hostname], operator: "$in" }
+                        ]
+                    },
+                    organization_id: process.env.organization_id
+                })
 
-                await this.acme.checkCertificate(hostname, organization._id, req.url)
-
-                if (valideUrl.pathname.startsWith('/webhooks/')) {
-                    let name = req.url.split('/')[2]; // Assuming URL structure is /webhook/name/...
-                    if (this.modules[name]) {
-                        this.executeScriptWithTimeout(name, { req, res, organization, valideUrl, organization_id: organization._id })
-                    } else {
-                        // Handle unknown module or missing webhook method
-                        res.writeHead(404, { 'Content-Type': 'application/json' });
-                        res.end(JSON.stringify({ error: 'Not found' }));
-                    }
-
+                if (!org || !org.object || !org.object[0]) {
+                    // TODO: hostNotFound is not defined
+                    if (!hostNotFound)
+                        hostNotFound = await getDefaultFile('/hostNotFound.html')
+                    return sendResponse(hostNotFound.object[0].src, 404, { 'Content-Type': 'text/html', 'storage': organization.storage })
                 } else {
-                    this.files.send(req, res, this.crud, organization, valideUrl)
+                    organization = org.object[0]
+                    organizations[organization._id] = organization
+                }
+            }
+
+            hosts[hostname] = organization
+
+            await this.acme.checkCertificate(hostname, organization._id, req.url)
+
+            if (valideUrl.pathname.startsWith('/webhooks/')) {
+                let name = req.url.split('/')[2]; // Assuming URL structure is /webhook/name/...
+                if (this.modules[name]) {
+                    this.executeScriptWithTimeout(name, { req, res, organization, valideUrl, organization_id: organization._id })
+                } else {
+                    // Handle unknown module or missing webhook method
+                    res.writeHead(404, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ error: 'Not found' }));
                 }
 
-            } catch (error) {
-                res.writeHead(400, { 'Content-Type': 'text/plain' });
-                res.end('Invalid host format');
+            } else {
+                this.files.send(req, res, this.crud, organization, valideUrl)
             }
-        })
 
+        } catch (error) {
+            res.writeHead(400, { 'Content-Type': 'text/plain' });
+            res.end('Invalid host format');
+        }
     }
 
     async executeScriptWithTimeout(name, data) {
