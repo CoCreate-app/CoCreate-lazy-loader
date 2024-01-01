@@ -1,3 +1,10 @@
+## [1.13.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.13.0...v1.13.1) (2024-01-01)
+
+
+### Bug Fixes
+
+* fs.access error handling ([e3e61f6](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/e3e61f69d0728e437ce7980862cb4c72aa9bb34f))
+
 # [1.13.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.12.2...v1.13.0) (2023-12-31)
 
 
