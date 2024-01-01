@@ -1,3 +1,10 @@
+## [1.13.2](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.13.1...v1.13.2) (2024-01-01)
+
+
+### Bug Fixes
+
+* send req.url to acme ([66715f9](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/66715f97ea85a23087b29a8ab45c47db35199f92))
+
 ## [1.13.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.13.0...v1.13.1) (2024-01-01)
 
 
