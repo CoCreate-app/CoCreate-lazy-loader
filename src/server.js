@@ -10,7 +10,6 @@ const hosts = {};
 class CoCreateLazyLoader {
     constructor(server, crud, files) {
         this.server = server
-        // this.acme = server.acme
         this.wsManager = crud.wsManager
         this.crud = crud
         this.files = files
@@ -47,14 +46,13 @@ class CoCreateLazyLoader {
             });
         }
 
-        this.server.https.on('request', (req, res) => this.request(req, res, 'HTTPS'))
-        this.server.http.on('request', (req, res) => this.request(req, res, 'HTTP'))
+        this.server.https.on('request', (req, res) => this.request(req, res))
+        this.server.http.on('request', (req, res) => this.request(req, res))
 
     }
 
-    async request(req, res, protocol) {
+    async request(req, res) {
         try {
-            console.log('server', protocol)
             const valideUrl = new URL(`http://${req.headers.host}${req.url}`);
             const hostname = valideUrl.hostname;
 
@@ -83,8 +81,6 @@ class CoCreateLazyLoader {
             }
 
             hosts[hostname] = organization
-
-            // await this.acme.checkCertificate(hostname, organization._id, req.url)
 
             if (valideUrl.pathname.startsWith('/webhooks/')) {
                 let name = req.url.split('/')[2]; // Assuming URL structure is /webhook/name/...
