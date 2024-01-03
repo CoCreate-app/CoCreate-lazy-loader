@@ -1,3 +1,17 @@
+# [1.14.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.13.2...v1.14.0) (2024-01-03)
+
+
+### Bug Fixes
+
+* added licencing details ([f927063](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/f927063172a0d24b5fbb2fc647bead7d271f0cfc))
+* comment checkCertificate ([c98d12d](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/c98d12d9d5e43d9eefde96ef05bd5387fd10a819))
+* removed '@cocreate/acme' as it is now handled by '[@cocreate-srever](https://github.com/cocreate-srever)' ([ca81282](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/ca81282b6c6d34178d18a423a74cacb8e44daec0))
+
+
+### Features
+
+* Added '[@cocreate-server](https://github.com/cocreate-server)' handle http and https ([3154183](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/3154183c347c409ff7af421cdebe13ded0bb05bb))
+
 ## [1.13.2](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.13.1...v1.13.2) (2024-01-01)
 
 
