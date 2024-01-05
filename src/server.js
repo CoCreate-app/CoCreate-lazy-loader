@@ -70,10 +70,7 @@ class CoCreateLazyLoader {
                 })
 
                 if (!org || !org.object || !org.object[0]) {
-                    // TODO: hostNotFound is not defined
-                    if (!hostNotFound)
-                        hostNotFound = await getDefaultFile('/hostNotFound.html')
-                    return sendResponse(hostNotFound.object[0].src, 404, { 'Content-Type': 'text/html', 'storage': organization.storage })
+                    return this.files.send(req, res, this.crud, organization, valideUrl)
                 } else {
                     organization = org.object[0]
                     organizations[organization._id] = organization
