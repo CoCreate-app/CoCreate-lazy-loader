@@ -4,8 +4,7 @@ const vm = require('vm');
 const Config = require("@cocreate/config");
 const { URL } = require('url');
 
-const organizations = {};
-const hosts = {};
+// const organizations = {};
 
 class CoCreateLazyLoader {
     constructor(server, crud, files) {
@@ -56,28 +55,9 @@ class CoCreateLazyLoader {
             const valideUrl = new URL(`http://${req.headers.host}${req.url}`);
             const hostname = valideUrl.hostname;
 
-            let organization = hosts[hostname];
-            if (!organization) {
-                let org = await this.crud.send({
-                    method: 'object.read',
-                    array: 'organizations',
-                    $filter: {
-                        query: [
-                            { key: "host", value: [hostname], operator: "$in" }
-                        ]
-                    },
-                    organization_id: process.env.organization_id
-                })
-
-                if (!org || !org.object || !org.object[0]) {
-                    return this.files.send(req, res, this.crud, organization, valideUrl)
-                } else {
-                    organization = org.object[0]
-                    organizations[organization._id] = organization
-                }
-            }
-
-            hosts[hostname] = organization
+            let organization = await this.crud.getHost(hostname);
+            if (organization.error)
+                return this.files.send(req, res, this.crud, organization, valideUrl)
 
             if (valideUrl.pathname.startsWith('/webhooks/')) {
                 let name = req.url.split('/')[2]; // Assuming URL structure is /webhook/name/...
@@ -160,31 +140,14 @@ class CoCreateLazyLoader {
     }
 
     async getApiKey(organization_id, name) {
-        organizations[organization_id] = this.getOrganization(organization_id, name)
-        organizations[organization_id] = await organizations[organization_id]
-        return organizations[organization_id][name]
-    }
-
-    async getOrganization(organization_id) {
-        let organization = await this.crud.send({
-            method: 'object.read',
-            database: organization_id,
-            array: 'organizations',
-            object: [{ _id: organization_id }],
-            organization_id
-        })
-
-        if (organization
-            && organization.object
-            && organization.object[0]) {
-            if (organization.object[0].apis) {
-                return organization.object[0].apis
-            } else
-                return { error: 'No apis defined could not be found' }
-        } else {
-            return { serverOrganization: false, error: 'An organization could not be found' }
-        }
-
+        let organization = await this.crud.getOrganization(organization_id, false);
+        if (!organization.error)
+            return organization.error
+        else if (!organization.apis)
+            return { error: 'Missing apis object in organization object' }
+        if (!organization.apis[name])
+            return { error: `Missing ${name} in organization apis object` }
+        return organization.apis[name]
     }
 
 }
