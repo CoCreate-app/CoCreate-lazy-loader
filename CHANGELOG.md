@@ -1,3 +1,18 @@
+# [1.15.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.14.0...v1.15.0) (2024-01-08)
+
+
+### Bug Fixes
+
+* applied host to define environment/branch ([2e830bf](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/2e830bfbc3a6ab08b4d67b7f756e19f7933d412a))
+* hostNotFound handled by fileServer ([4773bb8](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/4773bb8466e6f5ae469ab9b6687a0c52e74ef992))
+* init logging ([40c1157](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/40c11576f402593c8dff92414959c7f1e96948f7))
+
+
+### Features
+
+* bumped CoCreate dependencies to their latest versions ([8331382](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/83313829d28f95071cee5704164a35745067278a))
+* use crud.getHost and crud.getorganization ([142715e](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/142715e931e3e56bf841d5c2bcf061a0e3d56af2))
+
 # [1.14.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.13.2...v1.14.0) (2024-01-03)
 
 
