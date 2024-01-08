@@ -62,7 +62,7 @@ class CoCreateLazyLoader {
             if (valideUrl.pathname.startsWith('/webhooks/')) {
                 let name = req.url.split('/')[2]; // Assuming URL structure is /webhook/name/...
                 if (this.modules[name]) {
-                    this.executeScriptWithTimeout(name, { req, res, organization, valideUrl, organization_id: organization._id })
+                    this.executeScriptWithTimeout(name, { req, res, host: hostname, organization, valideUrl, organization_id: organization._id })
                 } else {
                     // Handle unknown module or missing webhook method
                     res.writeHead(404, { 'Content-Type': 'application/json' });
@@ -210,6 +210,7 @@ function clearModuleCache(name) {
 async function fetchScriptFromDatabaseAndSave(name, moduleConfig) {
     let data = {
         method: 'object.read',
+        host: moduleConfig.object.hostname,
         array: moduleConfig.array,
         $filter: {
             query: [
