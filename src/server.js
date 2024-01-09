@@ -135,9 +135,9 @@ class CoCreateLazyLoader {
 
     async getApiKey(organization_id, name) {
         let organization = await this.crud.getOrganization(organization_id, false);
-        if (!organization.error)
+        if (organization.error)
             return organization.error
-        else if (!organization.apis)
+        if (!organization.apis)
             return { error: 'Missing apis object in organization object' }
         if (!organization.apis[name])
             return { error: `Missing ${name} in organization apis object` }
