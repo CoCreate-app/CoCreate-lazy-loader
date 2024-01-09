@@ -1,3 +1,10 @@
+## [1.15.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.15.0...v1.15.1) (2024-01-09)
+
+
+### Bug Fixes
+
+* handle apikey error ([85a332a](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/85a332a9ef214a5494c6a5e780778becb15f73b9))
+
 # [1.15.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.14.0...v1.15.0) (2024-01-08)
 
 
