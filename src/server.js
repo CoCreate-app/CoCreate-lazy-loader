@@ -207,10 +207,10 @@ async function fetchScriptFromDatabaseAndSave(name, moduleConfig) {
         host: moduleConfig.object.hostname,
         array: moduleConfig.array,
         $filter: {
-            query: [
-                { key: "host", value: [moduleConfig.object.hostname, '*'], operator: "$in" },
-                { key: "pathname", value: moduleConfig.object.pathname, operator: "$eq" }
-            ],
+            query: {
+                host: { $in: [moduleConfig.object.hostname, '*'] },
+                pathname: moduleConfig.object.pathname
+            },
             limit: 1
         },
         organization_id
