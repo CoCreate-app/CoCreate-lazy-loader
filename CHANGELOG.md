@@ -1,3 +1,10 @@
+## [1.15.2](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.15.1...v1.15.2) (2024-01-17)
+
+
+### Bug Fixes
+
+* update to support new query system ([0891371](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/08913711bcbc5d3a86d3d385b916de8da3ad7c45))
+
 ## [1.15.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.15.0...v1.15.1) (2024-01-09)
 
 
