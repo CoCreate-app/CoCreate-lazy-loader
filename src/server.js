@@ -134,7 +134,7 @@ class CoCreateLazyLoader {
     }
 
     async getApiKey(organization_id, name) {
-        let organization = await this.crud.getOrganization(organization_id, false);
+        let organization = await this.crud.getOrganization(organization_id);
         if (organization.error)
             return organization.error
         if (!organization.apis)
