@@ -46,10 +46,12 @@ class CoCreateLazyLoader {
         try {
             const valideUrl = new URL(`http://${req.headers.host}${req.url}`);
             const hostname = valideUrl.hostname;
-
-            let organization = await this.crud.getHost(hostname);
-            if (organization.error)
+            let organization
+            try {
+                organization = await this.crud.getOrganization({ host: hostname });
+            } catch {
                 return this.files.send(req, res, this.crud, organization, valideUrl)
+            }
 
             if (valideUrl.pathname.startsWith('/webhooks/')) {
                 let name = req.url.split('/')[2]; // Assuming URL structure is /webhook/name/...
@@ -75,7 +77,7 @@ class CoCreateLazyLoader {
         try {
             if (this.modules[name].initialize) {
                 if (data.req)
-                    data = await this.webhooks(data)
+                    data = await this.webhooks(this.modules[name], data, name)
                 else
                     data = await this.api(this.modules[name], data)
             } else {
@@ -94,16 +96,17 @@ class CoCreateLazyLoader {
                 }
 
                 if (this.modules[name].content) {
-                    data.apis = await this.getApiKey(data.organization_id, name)
+                    data.apis = await this.getApiKey(data, name)
                     data.crud = this.crud
                     data = await this.modules[name].content.send(data)
                     delete data.apis
                     delete data.crud
-                    if (data.socket)
-                        this.wsManager.send(data)
                 } else
                     return
             }
+
+            if (data.socket)
+                this.wsManager.send(data)
 
             if (this.modules[name].unload === false || this.modules[name].unload === 'false')
                 return
@@ -134,19 +137,13 @@ class CoCreateLazyLoader {
                 this.modules[name].timeout = timeout
             }
         } catch (error) {
-            console.log(error)
+            data.error = error.message
+            if (data.req) {
+                data.res.writeHead(400, { 'Content-Type': 'text/plain' });
+                data.res.end(`Lazyload Error: ${error.message}`);
+            } if (data.socket)
+                this.wsManager.send(data)
         }
-    }
-
-    async getApiKey(organization_id, name) {
-        let organization = await this.crud.getOrganization(organization_id);
-        if (organization.error)
-            return organization.error
-        if (!organization.apis)
-            return { error: 'Missing apis object in organization object' }
-        if (!organization.apis[name])
-            return { error: `Missing ${name} in organization apis object` }
-        return organization.apis[name]
     }
 
     async api(config, data) {
@@ -154,14 +151,11 @@ class CoCreateLazyLoader {
             const methodPath = data.method.split('.')
             const name = methodPath.shift()
 
-            const apis = await this.getApiKey(data.organization_id, name)
-            if (apis.error)
-                return data.error = apis.error
-
+            const apis = await this.getApiKey(data, name)
             const environment = data.environment || 'production';
-            const key = apis[environment];
+            const key = apis[environment].key;
             if (!key)
-                return data.error = `Missing ${name} key in organization apis object`
+                throw new Error(`Missing ${name} key in organization apis object`);
 
             const service = require(config.path);
             const instance = new service[config.initialize](key);
@@ -170,32 +164,31 @@ class CoCreateLazyLoader {
             for (let i = 0; i < methodPath.length; i++) {
                 method = method[methodPath[i]]
                 if (method === undefined) {
-                    return data.error = `Method ${methodPath[i]} not found using ${data.method}.`
+                    throw new Error(`Method ${methodPath[i]} not found using ${data.method}.`);
                 }
             }
 
             if (typeof method !== 'function')
-                return data.error = `Method ${data.method} is not a function.`
+                throw new Error(`Method ${data.method} is not a function.`);
 
-            return data.postmark = await method.apply(instance, [data[name]]);
+            data.postmark = await method.apply(instance, [data[name]]);
+            return data
         } catch (error) {
-            return data.error = error.message
+            data.error = error.message
+            return data
         }
     }
 
-    async webhooks(config, data) {
+    async webhooks(config, data, name) {
         try {
-            const apis = await this.getApiKey(data.organization_id, name)
-            if (apis.error)
-                return data.error = apis.error
-
+            const apis = await this.getApiKey(data, name)
             let environment = data.environment || 'production';
             if (data.host.startsWith('dev.') || data.host.startsWith('test.'))
                 environment = 'test'
 
-            const key = apis[environment];
+            const key = apis[environment].key;
             if (!key)
-                return data.error = `Missing ${name} key in organization apis object`
+                throw new Error(`Missing ${name} key in organization apis object`);
 
             let name = data.req.url.split('/');
             name = name[3] || name[2] || name[1]
@@ -203,7 +196,7 @@ class CoCreateLazyLoader {
             // TODO: webhook secert could be a key pair
             const webhookSecret = data.apis[environment].webhooks[name];
             if (webhookSecret !== req.headers[name])
-                return data.error = `Webhook secret failed for ${name}. Unauthorized access attempt.`;
+                throw new Error(`Webhook secret failed for ${name}. Unauthorized access attempt.`);
 
             let rawBody = '';
             await new Promise((resolve, reject) => {
@@ -232,10 +225,22 @@ class CoCreateLazyLoader {
         } catch (error) {
             data.error = error.message
             data.res.writeHead(400, { 'Content-Type': 'text/plain' });
-            data.res.end(`Webhook Error: ${err.message}`);
+            data.res.end(error.message);
             return data
         }
     }
+
+    async getApiKey(data, name) {
+        let organization = await this.crud.getOrganization(data);
+        if (organization.error)
+            throw new Error(organization.error);
+        if (!organization.apis)
+            throw new Error('Missing apis object in organization object');
+        if (!organization.apis[name])
+            throw new Error(`Missing ${name} in organization apis object`);
+        return organization.apis[name]
+    }
+
 }
 
 function getModuleDependencies(modulePath) {
