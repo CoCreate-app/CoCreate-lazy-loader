@@ -4,8 +4,6 @@ const vm = require('vm');
 const Config = require("@cocreate/config");
 const { URL } = require('url');
 
-// const organizations = {};
-
 class CoCreateLazyLoader {
     constructor(server, crud, files) {
         this.server = server
@@ -75,30 +73,37 @@ class CoCreateLazyLoader {
 
     async executeScriptWithTimeout(name, data) {
         try {
-            if (!this.modules[name].content) {
-                if (this.modules[name].path)
-                    this.modules[name].content = await require(this.modules[name].path)
-                else {
-                    try {
-                        const scriptPath = path.join(scriptsDirectory, `${name}.js`);
-                        await fs.access(scriptPath);
-                        this.modules[name].content = await fs.readFile(scriptPath, 'utf8');
-                    } catch {
-                        this.modules[name].content = await fetchScriptFromDatabaseAndSave(name, this.modules[name], data);
+            if (this.modules[name].initialize) {
+                if (data.req)
+                    data = await this.webhooks(data)
+                else
+                    data = await this.api(this.modules[name], data)
+            } else {
+                if (!this.modules[name].content) {
+                    if (this.modules[name].path)
+                        this.modules[name].content = await require(this.modules[name].path)
+                    else {
+                        try {
+                            const scriptPath = path.join(scriptsDirectory, `${name}.js`);
+                            await fs.access(scriptPath);
+                            this.modules[name].content = await fs.readFile(scriptPath, 'utf8');
+                        } catch {
+                            this.modules[name].content = await fetchScriptFromDatabaseAndSave(name, this.modules[name], data);
+                        }
                     }
                 }
-            }
 
-            if (this.modules[name].content) {
-                data.apis = await this.getApiKey(data.organization_id, name)
-                data.crud = this.crud
-                data = await this.modules[name].content.send(data)
-                delete data.apis
-                delete data.crud
-                if (data.socket)
-                    this.wsManager.send(data)
-            } else
-                return
+                if (this.modules[name].content) {
+                    data.apis = await this.getApiKey(data.organization_id, name)
+                    data.crud = this.crud
+                    data = await this.modules[name].content.send(data)
+                    delete data.apis
+                    delete data.crud
+                    if (data.socket)
+                        this.wsManager.send(data)
+                } else
+                    return
+            }
 
             if (this.modules[name].unload === false || this.modules[name].unload === 'false')
                 return
@@ -144,6 +149,93 @@ class CoCreateLazyLoader {
         return organization.apis[name]
     }
 
+    async api(config, data) {
+        try {
+            const methodPath = data.method.split('.')
+            const name = methodPath.shift()
+
+            const apis = await this.getApiKey(data.organization_id, name)
+            if (apis.error)
+                return data.error = apis.error
+
+            const environment = data.environment || 'production';
+            const key = apis[environment];
+            if (!key)
+                return data.error = `Missing ${name} key in organization apis object`
+
+            const service = require(config.path);
+            const instance = new service[config.initialize](key);
+
+            let method = instance
+            for (let i = 0; i < methodPath.length; i++) {
+                method = method[methodPath[i]]
+                if (method === undefined) {
+                    return data.error = `Method ${methodPath[i]} not found using ${data.method}.`
+                }
+            }
+
+            if (typeof method !== 'function')
+                return data.error = `Method ${data.method} is not a function.`
+
+            return data.postmark = await method.apply(instance, [data[name]]);
+        } catch (error) {
+            return data.error = error.message
+        }
+    }
+
+    async webhooks(config, data) {
+        try {
+            const apis = await this.getApiKey(data.organization_id, name)
+            if (apis.error)
+                return data.error = apis.error
+
+            let environment = data.environment || 'production';
+            if (data.host.startsWith('dev.') || data.host.startsWith('test.'))
+                environment = 'test'
+
+            const key = apis[environment];
+            if (!key)
+                return data.error = `Missing ${name} key in organization apis object`
+
+            let name = data.req.url.split('/');
+            name = name[3] || name[2] || name[1]
+
+            // TODO: webhook secert could be a key pair
+            const webhookSecret = data.apis[environment].webhooks[name];
+            if (webhookSecret !== req.headers[name])
+                return data.error = `Webhook secret failed for ${name}. Unauthorized access attempt.`;
+
+            let rawBody = '';
+            await new Promise((resolve, reject) => {
+                data.req.on('data', chunk => {
+                    rawBody += chunk.toString();
+                });
+                data.req.on('end', () => {
+                    resolve();
+                });
+                data.req.on('error', (err) => {
+                    reject(err);
+                });
+            });
+
+            // TODO: if decrypt and validation is builtin to service   
+            // const service = require(config.path);
+            // const instance = new service[config.initialize](key);
+
+            // TODO: event may need to be handle by a built in service function
+            const event = JSON.parse(rawBody)
+            // TODO: using request.method and event.type get object and send socket.onMessage for proccessing
+
+            data.res.writeHead(200, { 'Content-Type': 'application/json' });
+            data.res.end(JSON.stringify({ message: 'Webhook received and processed' }));
+            return data
+        } catch (error) {
+            data.error = error.message
+            data.res.writeHead(400, { 'Content-Type': 'text/plain' });
+            data.res.end(`Webhook Error: ${err.message}`);
+            return data
+        }
+    }
 }
 
 function getModuleDependencies(modulePath) {
