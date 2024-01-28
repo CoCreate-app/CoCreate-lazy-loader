@@ -171,7 +171,8 @@ class CoCreateLazyLoader {
             if (typeof method !== 'function')
                 throw new Error(`Method ${data.method} is not a function.`);
 
-            data.postmark = await method.apply(instance, [data[name]]);
+            let params = data.$params || [data[name]]
+            data.postmark = await method.apply(instance, params);
             return data
         } catch (error) {
             data.error = error.message
