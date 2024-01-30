@@ -1,3 +1,17 @@
+# [1.16.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.15.2...v1.16.0) (2024-01-30)
+
+
+### Bug Fixes
+
+* error handling ([6bde772](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/6bde772156c95487a7c7abba494ee508c631fd99))
+* getOrganization accepts one param ([bd2336a](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/bd2336a32033cd631199995cf4e4878451524010))
+
+
+### Features
+
+* dynamically handles any third paty api and webhooks ([6ac3c2d](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/6ac3c2dce8786315ca9daaaa375e9ea480ecdf51))
+* operator $params to define an array of params and their data/values. ([31b6ec7](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/31b6ec728a7330410447229376a776d23011fc55))
+
 ## [1.15.2](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.15.1...v1.15.2) (2024-01-17)
 
 
