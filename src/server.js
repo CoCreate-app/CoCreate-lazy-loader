@@ -47,6 +47,7 @@ class CoCreateLazyLoader {
             const valideUrl = new URL(`http://${req.headers.host}${req.url}`);
             const hostname = valideUrl.hostname;
             let organization
+
             try {
                 organization = await this.crud.getOrganization({ host: hostname });
             } catch {
@@ -173,11 +174,11 @@ class CoCreateLazyLoader {
 
             let params = [], mainParam = false
             for (let i = 0; true; i++) {
-                if (`$param[${i}]` in object) {
-                    params.push(data[`$param[${i}]`])
-                    delete data[`$param[${i}]`]
+                if (`$param[${i}]` in data[name]) {
+                    params.push(data[name][`$param[${i}]`])
+                    delete data[name][`$param[${i}]`]
                 } else if (!mainParam) {
-                    params.push([data[name]])
+                    params.push(data[name])
                     mainParam = true
                 } else {
                     break;
