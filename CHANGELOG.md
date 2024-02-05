@@ -1,3 +1,16 @@
+# [1.17.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.16.0...v1.17.0) (2024-02-05)
+
+
+### Bug Fixes
+
+* $param handeling ([4f1cafc](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/4f1cafc6c598aad0b3e09c794d2a08874560538f))
+* Removed https://cdn.cocreate.app/latest/CoCreate.min.css ([538dd6a](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/538dd6a41df1d32fa71b46c3b2d0da7158c46d74))
+
+
+### Features
+
+* operate $param[] ([61181ad](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/61181ad37545b186336bb1a361aff1602ae6868f))
+
 # [1.16.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.15.2...v1.16.0) (2024-01-30)
 
 
