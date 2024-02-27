@@ -208,7 +208,20 @@ class CoCreateLazyLoader {
             name = name[3] || name[2] || name[1]
 
             // TODO: webhook secert could be a key pair
-            const webhookSecret = data.apis[environment].webhooks[name];
+            let webhookSecret, webhookObject
+            const webhook = data.apis[environment].webhooks[name];
+            if (!webhook)
+                throw new Error(`Webhook ${name} is not defined`);
+            else if (typeof webhook === 'string')
+                webhookSecret = webhook
+            else if (webhook.webhookSecret) {
+                webhookSecret = webhook.webhookSecret
+                webhookObject = webhook.webhookObject
+                // TODO: webhook could conatin $crud to get get webhook data
+            } else
+                throw new Error(`Webhook secret ${name} is not defined`);
+
+            // const webhookSecret = data.apis[environment].webhooks[name];
             if (webhookSecret !== req.headers[name])
                 throw new Error(`Webhook secret failed for ${name}. Unauthorized access attempt.`);
 
