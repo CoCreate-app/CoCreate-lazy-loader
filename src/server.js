@@ -250,11 +250,16 @@ class CoCreateLazyLoader {
 
             if (!parameters && webhook.authenticate && webhook.authenticate.parameters) {
                 parameters = webhook.authenticate.parameters
+            } else if (!parameters && data.apis[environment].authenticate) {
+                parameters = webhook.authenticate.parameters
             } else
                 throw new Error(`Webhook secret ${name} is not defined`);
 
-            if (!method && webhook.authenticate)
+            if (!method && webhook.authenticate && webhook.authenticate.method)
                 method = webhook.authenticate.method
+            else if (!method && data.apis[environment].authenticate)
+                method = data.apis[environment].authenticate.method
+
 
             if (!method && parameters[0] !== parameters[1])
                 throw new Error(`Webhook secret failed for ${name}. Unauthorized access attempt.`);
@@ -330,6 +335,35 @@ class CoCreateLazyLoader {
 
 }
 
+async function processOperators(data, obj, parent = null, parentKey = null) {
+    if (Array.isArray(obj)) {
+        obj.forEach(async (item, index) => await processOperators(data, item, obj, index));
+    } else if (typeof obj === 'object' && obj !== null) {
+        for (let key of Object.keys(obj)) {
+            // Check if key is an operator
+            if (key.startsWith('$')) {
+                const operatorResult = await processOperator(data, key, obj[key]);
+                if (parent && operatorResult !== null) {
+                    if (parentKey !== null) {
+                        parent[parentKey] = operatorResult;
+                        await processOperators(data, parent[parentKey], parent, parentKey);
+                    }
+                    // else {
+                    //     // Scenario 2: Replace the key (more complex, might require re-structuring the object)
+                    //     delete parent[key]; // Remove the original key
+                    //     parent[operatorResult] = obj[key]; // Assign the value to the new key
+                    //     // Continue processing the new key if necessary
+                    // }
+                }
+            } else {
+                await processOperators(data, obj[key], obj, key);
+            }
+        }
+    } else {
+        return await processOperator(data, obj);
+    }
+}
+
 async function processOperator(data, operator, context) {
     if (operator.startsWith('$data.')) {
         operator = getValueFromObject(data, operator.substring(6))
@@ -359,35 +393,6 @@ async function processOperator(data, operator, context) {
     // TODO: using request.method and event.type get object and send socket.onMessage for proccessing
 
     return operator; // For illustration, return the operator itself or the computed value
-}
-
-async function processOperators(data, obj, parent = null, parentKey = null) {
-    if (Array.isArray(obj)) {
-        obj.forEach(async (item, index) => await processOperators(data, item, obj, index));
-    } else if (typeof obj === 'object' && obj !== null) {
-        for (let key of Object.keys(obj)) {
-            // Check if key is an operator
-            if (key.startsWith('$')) {
-                const operatorResult = await processOperator(data, key, obj[key]);
-                if (parent && operatorResult !== null) {
-                    if (parentKey !== null) {
-                        parent[parentKey] = operatorResult;
-                        await processOperators(data, parent[parentKey], parent, parentKey);
-                    }
-                    // else {
-                    //     // Scenario 2: Replace the key (more complex, might require re-structuring the object)
-                    //     delete parent[key]; // Remove the original key
-                    //     parent[operatorResult] = obj[key]; // Assign the value to the new key
-                    //     // Continue processing the new key if necessary
-                    // }
-                }
-            } else {
-                await processOperators(data, obj[key], obj, key);
-            }
-        }
-    } else {
-        return await processOperator(data, obj);
-    }
 }
 
 function getModuleDependencies(modulePath) {
