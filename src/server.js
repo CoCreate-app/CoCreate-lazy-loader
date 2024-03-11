@@ -76,7 +76,7 @@ class CoCreateLazyLoader {
 
     async executeScriptWithTimeout(name, data) {
         try {
-            if (this.modules[name].initialize) {
+            if (this.modules[name].initialize || this.modules[name].initialize === '') {
                 if (data.req)
                     data = await this.webhooks(this.modules[name], data, name)
                 else
@@ -159,18 +159,11 @@ class CoCreateLazyLoader {
                 throw new Error(`Missing ${name} key in organization apis object`);
 
             const service = require(config.path);
-            const instance = new service[config.initialize](key);
-
-            let method = instance
-            for (let i = 0; i < methodPath.length; i++) {
-                method = method[methodPath[i]]
-                if (method === undefined) {
-                    throw new Error(`Method ${methodPath[i]} not found using ${data.method}.`);
-                }
-            }
-
-            if (typeof method !== 'function')
-                throw new Error(`Method ${data.method} is not a function.`);
+            let instance
+            if (config.initialize)
+                instance = new service[config.initialize](key);
+            else
+                instance = new service(key);
 
             let params = [], mainParam = false
             for (let i = 0; true; i++) {
@@ -191,7 +184,7 @@ class CoCreateLazyLoader {
             //     execute = await processOperators(data, execute);
             // }
 
-            data[name] = await method.apply(instance, params);
+            data[name] = await executeMethod(data.method, methodPath, instance, params)
 
             // let execute = webhook.events[eventName];
             // if (execute) {
@@ -272,18 +265,13 @@ class CoCreateLazyLoader {
                 event = JSON.parse(rawBody)
             } else {
                 const service = require(config.path);
-                const instance = new service[config.initialize](key);
-                const methodPath = method.split('.')
-                let property = instance
+                let instance
+                if (config.initialize)
+                    instance = new service[config.initialize](key);
+                else
+                    instance = new service(key);
 
-                for (let i = 0; i < methodPath.length; i++) {
-                    property = property[methodPath[i]]
-                    if (property === undefined) {
-                        throw new Error(`Method ${methodPath[i]} not found using ${data.method}.`);
-                    }
-                }
-
-                event = await property.apply(instance, parameters);
+                event = await executeMethod(name + '.' + method, methodPath, instance, parameters)
             }
 
             let eventName = getValueFromObject(event, nameKey)
@@ -377,6 +365,45 @@ async function processOperator(data, event, operator, context) {
     }
 
     return operator;
+}
+
+async function executeMethod(method, methodPath, instance, params) {
+    try {
+        switch (methodPath.length) {
+            case 1:
+                return await instance[methodPath[0]](...params)
+            case 2:
+                return await instance[methodPath[0]][methodPath[1]](...params);
+            case 3:
+                return await instance[methodPath[0]][methodPath[1]][methodPath[2]](...params);
+            case 4:
+                return await instance[methodPath[0]][methodPath[1]][methodPath[2]][methodPath[3]](...params);
+            case 5:
+                return await instance[methodPath[0]][methodPath[1]][methodPath[2]][methodPath[3]][methodPath[4]](...params);
+            case 6:
+                return await instance[methodPath[0]][methodPath[1]][methodPath[2]][methodPath[3]][methodPath[4]][methodPath[5]](...params);
+            case 7:
+                return await instance[methodPath[0]][methodPath[1]][methodPath[2]][methodPath[3]][methodPath[4]][methodPath[5]][methodPath[6]](...params);
+            case 8:
+                return await instance[methodPath[0]][methodPath[1]][methodPath[2]][methodPath[3]][methodPath[4]][methodPath[5]][methodPath[6]][methodPath[7]](...params);
+            default:
+                const methodName = methodPath.pop();
+                let Method = instance
+                for (let i = 0; i < methodPath.length; i++) {
+                    Method = Method[methodPath[i]]
+                    if (Method === undefined) {
+                        throw new Error(`Method ${methodPath[i]} not found using ${method}.`);
+                    }
+                }
+
+                if (typeof Method[methodName] !== 'function')
+                    throw new Error(`Method ${method} is not a function.`);
+
+                return await Method[methodName](...params)
+        }
+    } catch (error) {
+        throw new Error(`Method ${method} not found.`);
+    }
 }
 
 function getModuleDependencies(modulePath) {
