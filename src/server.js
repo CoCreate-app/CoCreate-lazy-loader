@@ -309,7 +309,7 @@ class CoCreateLazyLoader {
 async function processOperators(data, event, execute, parent = null, parentKey = null) {
     if (Array.isArray(execute)) {
         execute.forEach(async (item, index) => await processOperators(data, event, item, execute, index));
-    } else if (typeof execute === 'executeect' && execute !== null) {
+    } else if (typeof execute === 'object' && execute !== null) {
         for (let key of Object.keys(execute)) {
             // Check if key is an operator
             if (key.startsWith('$')) {
