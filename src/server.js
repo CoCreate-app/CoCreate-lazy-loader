@@ -178,18 +178,13 @@ class CoCreateLazyLoader {
                 }
             }
 
-            // TODO: should run processOperators before and after in order to perform complex opertions 
-            // let execute = webhook.events[eventName];
-            // if (execute) {
-            //     execute = await processOperators(data, execute);
-            // }
+            // TODO: should run processOperators before in order to perform complex opertions and get data
+            // data[name] = await processOperators(data, null, data[name]);
 
             data[name] = await executeMethod(data.method, methodPath, instance, params)
 
-            // let execute = webhook.events[eventName];
-            // if (execute) {
-            //     execute = await processOperators(data, execute);
-            // }
+            // TODO: should run processOperators after in order to perform complex opertions and get data
+            // data[name] = await processOperators(data, data[name]);
 
             return data
         } catch (error) {
