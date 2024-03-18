@@ -1,3 +1,19 @@
+# [1.18.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.17.0...v1.18.0) (2024-03-18)
+
+
+### Bug Fixes
+
+* handlng wbhook returned as string or object ([daf7438](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/daf7438bf8d6f049629112d056d9a598499cc23e))
+* imporved authentication handling ([dfc9b1c](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/dfc9b1c8b9fe547ff16d441e4b31b3f0332bacb8))
+* typo executeect updated to object ([a1b6258](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/a1b6258a7a88cd4e9847257fb552852342d9c7e3))
+
+
+### Features
+
+* authentication can be defined at envirnonemt level ([e4bf74c](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/e4bf74cdd8146bd390aec734d29e4177c3b264a7))
+* executeMethod() to handle dotNotion method without losing context ([8ab4f84](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/8ab4f8484073891dba4c154938ae597c21962c5f))
+* processOperators() to execute/rturn operator value ([e948ca2](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/e948ca24c1fb1ba5ae9718aaa466f0e26af78c74))
+
 # [1.17.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.16.0...v1.17.0) (2024-02-05)
 
 
