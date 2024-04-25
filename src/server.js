@@ -1,8 +1,10 @@
 const fs = require('fs').promises;
 const path = require('path');
+const { URL } = require('url');
 const vm = require('vm');
 const Config = require("@cocreate/config");
-const { URL } = require('url');
+const { getValueFromObject } = require('@cocreate/utils');
+
 
 class CoCreateLazyLoader {
     constructor(server, crud, files) {
@@ -44,6 +46,7 @@ class CoCreateLazyLoader {
 
     async request(req, res) {
         try {
+            // TODO: track usage
             const valideUrl = new URL(`http://${req.headers.host}${req.url}`);
             const hostname = valideUrl.hostname;
             let organization
@@ -211,21 +214,23 @@ class CoCreateLazyLoader {
             if (!webhook)
                 throw new Error(`Webhook ${name} ${webhookName} is not defined`);
 
-            let dataKey = webhook.dataKey || apis[environment].dataKey
-            if (!dataKey)
+            // eventDataKey is used to access the event data
+            let eventDataKey = webhook.eventDataKey || apis[environment].eventDataKey
+            if (!eventDataKey)
                 throw new Error(`Webhook ${name} eventKey is not defined`);
 
-            let nameKey = webhook.nameKey || apis[environment].nameKey
-            if (!nameKey)
-                throw new Error(`Webhook ${name} eventKey is not defined`);
+            // eventNameKey is used to access the event the event name
+            let eventNameKey = webhook.eventNameKey || apis[environment].eventNameKey
+            if (!eventNameKey)
+                throw new Error(`Webhook ${name} eventNameKey is not defined`);
 
             if (!webhook.events)
                 throw new Error(`Webhook ${name} events are not defined`);
 
-            let rawBody = '';
+            data.rawBody = '';
             await new Promise((resolve, reject) => {
                 data.req.on('data', chunk => {
-                    rawBody += chunk.toString();
+                    data.rawBody += chunk.toString();
                 });
                 data.req.on('end', () => {
                     resolve();
@@ -237,18 +242,20 @@ class CoCreateLazyLoader {
 
             let parameters, method
 
-            if (webhook.authenticate) {
-                method = webhook.authenticate.method
-                parameters = webhook.authenticate.parameters
-            }
 
-            if (!parameters && apis[environment].authenticate && apis[environment].authenticate.parameters) {
+            if (webhook.authenticate && webhook.authenticate.method) {
+                method = webhook.authenticate.method
+            } else if (apis[environment].authenticate && apis[environment].authenticate.method) {
+                method = apis[environment].authenticate.method
+            } else
+                throw new Error(`Webhook ${name} authenticate method is not defined`);
+
+            if (webhook.authenticate && webhook.authenticate.parameters) {
+                parameters = webhook.authenticate.parameters
+            } else if (apis[environment].authenticate && apis[environment].authenticate.parameters) {
                 parameters = apis[environment].authenticate.parameters
             } else
-                throw new Error(`Webhook secret ${name} is not defined`);
-
-            if (!method && apis[environment].authenticate)
-                method = apis[environment].authenticate.method
+                throw new Error(`Webhook ${name} authenticate parameters is not defined`);
 
             // TODO: webhook secert could be a key pair
 
@@ -257,7 +264,7 @@ class CoCreateLazyLoader {
                 if (!parameters[0] !== parameters[1])
                     throw new Error(`Webhook secret failed for ${name}. Unauthorized access attempt.`);
 
-                event = JSON.parse(rawBody)
+                event = JSON.parse(data.rawBody)
             } else {
                 const service = require(config.path);
                 let instance
@@ -266,16 +273,20 @@ class CoCreateLazyLoader {
                 else
                     instance = new service(key);
 
-                event = await executeMethod(name + '.' + method, methodPath, instance, parameters)
+                const methodPath = method.split('.')
+
+                await processOperators(data, '', parameters);
+
+                event = await executeMethod(method, methodPath, instance, parameters)
             }
 
-            let eventName = getValueFromObject(event, nameKey)
+            let eventName = getValueFromObject(event, eventNameKey)
             if (!eventName)
-                throw new Error(`Webhook ${name} nameKey: ${nameKey} could not be found in the event.`);
+                throw new Error(`Webhook ${name} eventNameKey: ${eventNameKey} could not be found in the event.`);
 
-            let eventData = getValueFromObject(event, dataKey)
+            let eventData = getValueFromObject(event, eventDataKey)
             if (!eventData)
-                throw new Error(`Webhook ${name} dataKey: ${dataKey} could not be found in the event.`);
+                throw new Error(`Webhook ${name} eventDataKey: ${eventDataKey} could not be found in the event.`);
 
             let execute = webhook.events[eventName];
             if (execute) {
@@ -308,40 +319,66 @@ class CoCreateLazyLoader {
 
 async function processOperators(data, event, execute, parent = null, parentKey = null) {
     if (Array.isArray(execute)) {
-        execute.forEach(async (item, index) => await processOperators(data, event, item, execute, index));
+        for (let index = 0; index < execute.length; index++) {
+            execute[index] = await processOperators(data, event, execute[index], execute, index);
+        }
     } else if (typeof execute === 'object' && execute !== null) {
         for (let key of Object.keys(execute)) {
-            // Check if key is an operator
             if (key.startsWith('$')) {
                 const operatorResult = await processOperator(data, event, key, execute[key]);
-                if (parent && operatorResult !== null) {
-                    if (parentKey !== null) {
-                        parent[parentKey] = operatorResult;
-                        await processOperators(data, event, parent[parentKey], parent, parentKey);
-                    }
-                    // else {
-                    //     // Scenario 2: Replace the key (more complex, might require re-structuring the executable object)
-                    //     delete parent[key]; // Remove the original key
-                    //     parent[operatorResult] = execute[key]; // Assign the value to the new key
-                    //     // Continue processing the new key if necessary
-                    // }
+                if (parent && operatorResult !== null && parentKey !== null) {
+                    parent[parentKey] = operatorResult;
+                    await processOperators(data, event, parent[parentKey], parent, parentKey);
                 }
             } else {
-                await processOperators(data, event, execute[key], execute, key);
+                execute[key] = await processOperators(data, event, execute[key], execute, key);
             }
         }
     } else {
         return await processOperator(data, event, execute);
     }
+    return execute;
 }
+
+// async function processOperators(data, event, execute, parent = null, parentKey = null) {
+//     if (Array.isArray(execute)) {
+//         execute.forEach(async (item, index) => await processOperators(data, event, item, execute, index));
+//     } else if (typeof execute === 'object' && execute !== null) {
+//         for (let key of Object.keys(execute)) {
+//             // Check if key is an operator
+//             if (key.startsWith('$')) {
+//                 const operatorResult = await processOperator(data, event, key, execute[key]);
+//                 if (parent && operatorResult !== null) {
+//                     if (parentKey !== null) {
+//                         parent[parentKey] = operatorResult;
+//                         await processOperators(data, event, parent[parentKey], parent, parentKey);
+//                     }
+//                     // else {
+//                     //     // Scenario 2: Replace the key (more complex, might require re-structuring the executable object)
+//                     //     delete parent[key]; // Remove the original key
+//                     //     parent[operatorResult] = execute[key]; // Assign the value to the new key
+//                     //     // Continue processing the new key if necessary
+//                     // }
+//                 }
+//             } else {
+//                 await processOperators(data, event, execute[key], execute, key);
+//             }
+//         }
+//     } else {
+//         return await processOperator(data, event, execute);
+//     }
+// }
 
 async function processOperator(data, event, operator, context) {
     if (operator.startsWith('$data.')) {
         operator = getValueFromObject(data, operator.substring(6))
-    } else if (operator.startsWith('$req.')) {
-        operator = getValueFromObject(data.req, operator.substring(5))
-    } else if (operator.startsWith('$header.')) {
-        operator = getValueFromObject(data.req.header, operator.substring(7))
+    } else if (operator.startsWith('$req')) {
+        console.log(operator.substring(1))
+        operator = getValueFromObject(data, operator.substring(1))
+    } else if (operator.startsWith('$header')) {
+        operator = getValueFromObject(data.req, operator.substring(1))
+    } else if (operator.startsWith('$rawBody')) {
+        operator = getValueFromObject(data, operator.substring(1))
     } else if (operator.startsWith('$crud')) {
         operator = await data.crud.send(context)
         let name = operator.method.split('.')[0]
