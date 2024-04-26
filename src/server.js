@@ -275,7 +275,7 @@ class CoCreateLazyLoader {
 
                 const methodPath = method.split('.')
 
-                await processOperators(data, '', parameters);
+                await this.processOperators(data, '', parameters);
 
                 event = await executeMethod(method, methodPath, instance, parameters)
             }
@@ -290,7 +290,7 @@ class CoCreateLazyLoader {
 
             let execute = webhook.events[eventName];
             if (execute) {
-                execute = await processOperators(data, event, execute);
+                execute = await this.processOperators(data, event, execute);
             }
 
             data.res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -302,6 +302,67 @@ class CoCreateLazyLoader {
             data.res.end(error.message);
             return data
         }
+    }
+
+    async processOperators(data, event, execute, parent = null, parentKey = null) {
+        if (Array.isArray(execute)) {
+            for (let index = 0; index < execute.length; index++) {
+                execute[index] = await this.processOperators(data, event, execute[index], execute, index);
+            }
+        } else if (typeof execute === 'object' && execute !== null) {
+            for (let key of Object.keys(execute)) {
+                if (key.startsWith('$')) {
+                    const operatorResult = await this.processOperator(data, event, key, execute[key]);
+                    if (parent && operatorResult !== null && parentKey !== null) {
+                        parent[parentKey] = operatorResult;
+                        await this.processOperators(data, event, parent[parentKey], parent, parentKey);
+                    }
+                } else {
+                    execute[key] = await this.processOperators(data, event, execute[key], execute, key);
+                }
+            }
+        } else {
+            return await this.processOperator(data, event, execute);
+        }
+        return execute;
+    }
+
+    async processOperator(data, event, operator, context) {
+        let result
+        if (operator.startsWith('$data.')) {
+            return getValueFromObject(data, operator.substring(6))
+        } else if (operator.startsWith('$req')) {
+            return getValueFromObject(data, operator.substring(1))
+        } else if (operator.startsWith('$header')) {
+            return getValueFromObject(data.req, operator.substring(1))
+        } else if (operator.startsWith('$rawBody')) {
+            return getValueFromObject(data, operator.substring(1))
+        } else if (operator.startsWith('$crud')) {
+            context = await this.processOperators(data, event, context);
+            result = await this.crud.send(context)
+            if (operator.startsWith('$crud.'))
+                result = getValueFromObject(operator, operator.substring(6))
+            return await this.processOperators(data, event, result);
+        } else if (operator.startsWith('$socket')) {
+            context = await this.processOperators(data, event, context);
+            result = await this.socket.send(context)
+            if (operator.startsWith('$socket.'))
+                result = getValueFromObject(operator, operator.substring(6))
+            return await this.processOperators(data, event, result);
+        } else if (operator.startsWith('$api')) {
+            context = await this.processOperators(data, event, context);
+            let name = context.method.split('.')[0]
+            result = this.executeScriptWithTimeout(name, context)
+            if (operator.startsWith('$api.'))
+                result = getValueFromObject(event, operator.substring(5))
+            return await this.processOperators(data, event, result);
+        } else if (operator.startsWith('$event')) {
+            if (operator.startsWith('$event.'))
+                result = getValueFromObject(event, operator.substring(7))
+            return await this.processOperators(data, event, result);
+        }
+
+        return operator;
     }
 
     async getApiKey(data, name) {
@@ -317,28 +378,6 @@ class CoCreateLazyLoader {
 
 }
 
-async function processOperators(data, event, execute, parent = null, parentKey = null) {
-    if (Array.isArray(execute)) {
-        for (let index = 0; index < execute.length; index++) {
-            execute[index] = await processOperators(data, event, execute[index], execute, index);
-        }
-    } else if (typeof execute === 'object' && execute !== null) {
-        for (let key of Object.keys(execute)) {
-            if (key.startsWith('$')) {
-                const operatorResult = await processOperator(data, event, key, execute[key]);
-                if (parent && operatorResult !== null && parentKey !== null) {
-                    parent[parentKey] = operatorResult;
-                    await processOperators(data, event, parent[parentKey], parent, parentKey);
-                }
-            } else {
-                execute[key] = await processOperators(data, event, execute[key], execute, key);
-            }
-        }
-    } else {
-        return await processOperator(data, event, execute);
-    }
-    return execute;
-}
 
 // async function processOperators(data, event, execute, parent = null, parentKey = null) {
 //     if (Array.isArray(execute)) {
@@ -368,36 +407,6 @@ async function processOperators(data, event, execute, parent = null, parentKey =
 //         return await processOperator(data, event, execute);
 //     }
 // }
-
-async function processOperator(data, event, operator, context) {
-    if (operator.startsWith('$data.')) {
-        operator = getValueFromObject(data, operator.substring(6))
-    } else if (operator.startsWith('$req')) {
-        console.log(operator.substring(1))
-        operator = getValueFromObject(data, operator.substring(1))
-    } else if (operator.startsWith('$header')) {
-        operator = getValueFromObject(data.req, operator.substring(1))
-    } else if (operator.startsWith('$rawBody')) {
-        operator = getValueFromObject(data, operator.substring(1))
-    } else if (operator.startsWith('$crud')) {
-        operator = await data.crud.send(context)
-        let name = operator.method.split('.')[0]
-        operator = operator[name]
-    } else if (operator.startsWith('$socket')) {
-        operator = await data.socket.send(context)
-        let name = operator.method.split('.')[0]
-        operator = operator[name]
-    } else if (operator.startsWith('$api')) {
-        let name = context.method.split('.')[0]
-        operator = this.executeScriptWithTimeout(name, context)
-    } else if (operator.startsWith('$webhook.')) {
-        operator = getValueFromObject(webhook, operator.substring(9))
-    } else if (operator.startsWith('$event.')) {
-        operator = getValueFromObject(event, operator.substring(7))
-    }
-
-    return operator;
-}
 
 async function executeMethod(method, methodPath, instance, params) {
     try {
