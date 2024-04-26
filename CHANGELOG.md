@@ -1,3 +1,15 @@
+# [1.19.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.18.0...v1.19.0) (2024-04-26)
+
+
+### Bug Fixes
+
+* added processOperators and processOperator to lazyLoader class ([973f07a](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/973f07ac492dee348f15b6889c15e180cf4d3eb0))
+
+
+### Features
+
+* dynamically handle webhooks using operations and objects to perform actions ([c1f17b4](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/c1f17b47304bd9c0b44ba591809dfee3c7186992))
+
 # [1.18.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.17.0...v1.18.0) (2024-03-18)
 
 
