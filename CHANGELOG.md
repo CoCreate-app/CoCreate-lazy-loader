@@ -1,3 +1,10 @@
+## [1.19.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.19.0...v1.19.1) (2024-04-27)
+
+
+### Bug Fixes
+
+* eniroment declaration and error handling of execute method ([659d947](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/659d947af1226c77b4cbcbaaed10596ade73183f))
+
 # [1.19.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.18.0...v1.19.0) (2024-04-26)
 
 
