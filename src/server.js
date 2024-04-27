@@ -156,7 +156,13 @@ class CoCreateLazyLoader {
             const name = methodPath.shift()
 
             const apis = await this.getApiKey(data, name)
-            const environment = data.environment || 'production';
+            let environment = 'production';
+
+            if (data.environment)
+                environment = data.environment
+            else if (data.host.startsWith('dev.') || data.host.startsWith('test.'))
+                environment = 'test'
+
             const key = apis[environment].key;
             if (!key)
                 throw new Error(`Missing ${name} key in organization apis object`);
@@ -199,8 +205,9 @@ class CoCreateLazyLoader {
     async webhooks(config, data, name) {
         try {
             const apis = await this.getApiKey(data, name)
-            let environment = data.environment || 'production';
-            if (data.host.startsWith('dev.') || data.host.startsWith('test.'))
+            if (data.environment)
+                environment = data.environment
+            else if (data.host.startsWith('dev.') || data.host.startsWith('test.'))
                 environment = 'test'
 
             const key = apis[environment].key;
@@ -443,7 +450,7 @@ async function executeMethod(method, methodPath, instance, params) {
                 return await Method[methodName](...params)
         }
     } catch (error) {
-        throw new Error(`Method ${method} not found.`);
+        throw new Error(error);
     }
 }
 
