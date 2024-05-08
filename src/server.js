@@ -205,6 +205,8 @@ class CoCreateLazyLoader {
     async webhooks(config, data, name) {
         try {
             const apis = await this.getApiKey(data, name)
+            let environment = 'production';
+
             if (data.environment)
                 environment = data.environment
             else if (data.host.startsWith('dev.') || data.host.startsWith('test.'))
@@ -311,32 +313,34 @@ class CoCreateLazyLoader {
         }
     }
 
-    async processOperators(data, event, execute, parent = null, parentKey = null) {
+    async processOperators(data, event, execute) {
         if (Array.isArray(execute)) {
             for (let index = 0; index < execute.length; index++) {
-                execute[index] = await this.processOperators(data, event, execute[index], execute, index);
+                execute[index] = await this.processOperators(data, event, execute[index]);
             }
         } else if (typeof execute === 'object' && execute !== null) {
             for (let key of Object.keys(execute)) {
-                if (key.startsWith('$')) {
-                    const operatorResult = await this.processOperator(data, event, key, execute[key]);
-                    if (parent && operatorResult !== null && parentKey !== null) {
-                        parent[parentKey] = operatorResult;
-                        await this.processOperators(data, event, parent[parentKey], parent, parentKey);
-                    }
-                } else {
-                    execute[key] = await this.processOperators(data, event, execute[key], execute, key);
+                if (key.startsWith('$') && !['$storage', '$database', '$array', '$filter'].includes(key)) {
+                    execute[key] = await this.processOperator(data, event, key, execute[key]);
+                } else if (typeof execute[key] === 'string' && execute[key].startsWith('$') && !['$storage', '$database', '$array', '$filter'].includes(execute[key])) {
+                    execute[key] = await this.processOperator(data, event, execute[key]);
+                } else if (Array.isArray(execute[key])) {
+                    execute[key] = await this.processOperators(data, event, execute[key]);
+                } else if (typeof execute[key] === 'object' && execute[key] !== null) {
+                    execute[key] = await this.processOperators(data, event, execute[key]);
                 }
             }
-        } else {
-            return await this.processOperator(data, event, execute);
+        } else if (typeof execute === 'string' && execute.startsWith('$') && !['$storage', '$database', '$array', '$filter'].includes(execute)) {
+            execute = await this.processOperator(data, event, execute);
         }
+
         return execute;
     }
 
     async processOperator(data, event, operator, context) {
         let result
         if (operator.startsWith('$data.')) {
+            result = getValueFromObject(data, operator.substring(6))
             return getValueFromObject(data, operator.substring(6))
         } else if (operator.startsWith('$req')) {
             return getValueFromObject(data, operator.substring(1))
@@ -384,36 +388,6 @@ class CoCreateLazyLoader {
     }
 
 }
-
-
-// async function processOperators(data, event, execute, parent = null, parentKey = null) {
-//     if (Array.isArray(execute)) {
-//         execute.forEach(async (item, index) => await processOperators(data, event, item, execute, index));
-//     } else if (typeof execute === 'object' && execute !== null) {
-//         for (let key of Object.keys(execute)) {
-//             // Check if key is an operator
-//             if (key.startsWith('$')) {
-//                 const operatorResult = await processOperator(data, event, key, execute[key]);
-//                 if (parent && operatorResult !== null) {
-//                     if (parentKey !== null) {
-//                         parent[parentKey] = operatorResult;
-//                         await processOperators(data, event, parent[parentKey], parent, parentKey);
-//                     }
-//                     // else {
-//                     //     // Scenario 2: Replace the key (more complex, might require re-structuring the executable object)
-//                     //     delete parent[key]; // Remove the original key
-//                     //     parent[operatorResult] = execute[key]; // Assign the value to the new key
-//                     //     // Continue processing the new key if necessary
-//                     // }
-//                 }
-//             } else {
-//                 await processOperators(data, event, execute[key], execute, key);
-//             }
-//         }
-//     } else {
-//         return await processOperator(data, event, execute);
-//     }
-// }
 
 async function executeMethod(method, methodPath, instance, params) {
     try {
