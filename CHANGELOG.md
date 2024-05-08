@@ -1,3 +1,10 @@
+## [1.19.3](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.19.2...v1.19.3) (2024-05-08)
+
+
+### Bug Fixes
+
+* processOperators and processOperator functions ([984f19c](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/984f19cdad55bfb74b9599f910950ef91f174f00))
+
 ## [1.19.2](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.19.1...v1.19.2) (2024-04-29)
 
 
