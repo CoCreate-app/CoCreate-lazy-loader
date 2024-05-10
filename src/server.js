@@ -156,14 +156,8 @@ class CoCreateLazyLoader {
             const name = methodPath.shift()
 
             const apis = await this.getApiKey(data, name)
-            let environment = 'production';
 
-            if (data.environment)
-                environment = data.environment
-            else if (data.host.startsWith('dev.') || data.host.startsWith('test.'))
-                environment = 'test'
-
-            const key = apis[environment].key;
+            const key = apis.key;
             if (!key)
                 throw new Error(`Missing ${name} key in organization apis object`);
 
@@ -205,31 +199,25 @@ class CoCreateLazyLoader {
     async webhooks(config, data, name) {
         try {
             const apis = await this.getApiKey(data, name)
-            let environment = 'production';
 
-            if (data.environment)
-                environment = data.environment
-            else if (data.host.startsWith('dev.') || data.host.startsWith('test.'))
-                environment = 'test'
-
-            const key = apis[environment].key;
+            const key = apis.key;
             if (!key)
                 throw new Error(`Missing ${name} key in organization apis object`);
 
             let webhookName = data.req.url.split('/');
             webhookName = webhookName[webhookName.length - 1]
 
-            const webhook = apis[environment].webhooks[webhookName];
+            const webhook = apis.webhooks[webhookName];
             if (!webhook)
                 throw new Error(`Webhook ${name} ${webhookName} is not defined`);
 
             // eventDataKey is used to access the event data
-            let eventDataKey = webhook.eventDataKey || apis[environment].eventDataKey
+            let eventDataKey = webhook.eventDataKey || apis.eventDataKey
             if (!eventDataKey)
                 throw new Error(`Webhook ${name} eventKey is not defined`);
 
             // eventNameKey is used to access the event the event name
-            let eventNameKey = webhook.eventNameKey || apis[environment].eventNameKey
+            let eventNameKey = webhook.eventNameKey || apis.eventNameKey
             if (!eventNameKey)
                 throw new Error(`Webhook ${name} eventNameKey is not defined`);
 
@@ -254,15 +242,15 @@ class CoCreateLazyLoader {
 
             if (webhook.authenticate && webhook.authenticate.method) {
                 method = webhook.authenticate.method
-            } else if (apis[environment].authenticate && apis[environment].authenticate.method) {
-                method = apis[environment].authenticate.method
+            } else if (apis.authenticate && apis.authenticate.method) {
+                method = apis.authenticate.method
             } else
                 throw new Error(`Webhook ${name} authenticate method is not defined`);
 
             if (webhook.authenticate && webhook.authenticate.parameters) {
                 parameters = webhook.authenticate.parameters
-            } else if (apis[environment].authenticate && apis[environment].authenticate.parameters) {
-                parameters = apis[environment].authenticate.parameters
+            } else if (apis.authenticate && apis.authenticate.parameters) {
+                parameters = apis.authenticate.parameters
             } else
                 throw new Error(`Webhook ${name} authenticate parameters is not defined`);
 
