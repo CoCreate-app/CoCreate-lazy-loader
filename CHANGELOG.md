@@ -1,3 +1,10 @@
+## [1.19.4](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.19.3...v1.19.4) (2024-05-10)
+
+
+### Bug Fixes
+
+* removed environment handling variables as it is database specific ([d63921c](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/d63921cb039c284ab452bf47f0802fc56a66eeb3))
+
 ## [1.19.3](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.19.2...v1.19.3) (2024-05-08)
 
 
