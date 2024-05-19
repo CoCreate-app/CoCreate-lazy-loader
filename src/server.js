@@ -337,11 +337,25 @@ class CoCreateLazyLoader {
         } else if (operator.startsWith('$rawBody')) {
             return getValueFromObject(data, operator.substring(1))
         } else if (operator.startsWith('$crud')) {
-            context = await this.processOperators(data, event, context);
-            result = await this.crud.send(context)
-            if (operator.startsWith('$crud.'))
-                result = getValueFromObject(operator, operator.substring(6))
-            return await this.processOperators(data, event, result);
+            let results = context
+            let isObject = false
+            if (!Array.isArray(results)) {
+                isObject = true
+                results = [results]
+            }
+
+            for (let i = 0; i < results.length; i++) {
+                results[i] = await this.processOperators(data, event, results[i]);
+                results[i] = await this.crud.send(results[i])
+                if (operator.startsWith('$crud.'))
+                    results[i] = getValueFromObject(operator, operator.substring(6))
+                results[i] = await this.processOperators(data, event, results[i])
+            }
+
+            if (isObject)
+                results = results[0]
+
+            return results;
         } else if (operator.startsWith('$socket')) {
             context = await this.processOperators(data, event, context);
             result = await this.socket.send(context)
