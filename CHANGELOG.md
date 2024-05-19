@@ -1,3 +1,10 @@
+# [1.20.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.19.4...v1.20.0) (2024-05-19)
+
+
+### Features
+
+* $crud operator handles an array of objects ([1cd7205](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/1cd7205b8a021cc9e98edb74cc3df7575357fd6e))
+
 ## [1.19.4](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.19.3...v1.19.4) (2024-05-10)
 
 
