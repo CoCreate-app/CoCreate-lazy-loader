@@ -161,6 +161,7 @@ class CoCreateLazyLoader {
             if (!key)
                 throw new Error(`Missing ${name} key in organization apis object`);
 
+            // ToDo: if data.endpoint service not required as endpoint will be used
             const service = require(config.path);
             let instance
             if (config.initialize)
