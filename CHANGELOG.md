@@ -1,3 +1,11 @@
+## [1.20.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.20.0...v1.20.1) (2024-06-12)
+
+
+### Bug Fixes
+
+* bump cocreate dependencies ([8e19b5e](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/8e19b5e5b7e54f1141f28f44b2ffe438f995b91b))
+* svg icon class ([2158676](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/215867667950fac30375e19362174a878498cb8f))
+
 # [1.20.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.19.4...v1.20.0) (2024-05-19)
 
 
