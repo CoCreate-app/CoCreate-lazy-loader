@@ -1,3 +1,10 @@
+## [1.20.4](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.20.3...v1.20.4) (2024-06-30)
+
+
+### Bug Fixes
+
+* comment typo ([ceebdfb](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/ceebdfbf85267a32175db7fa83e25a1594983448))
+
 ## [1.20.3](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.20.2...v1.20.3) (2024-06-23)
 
 
