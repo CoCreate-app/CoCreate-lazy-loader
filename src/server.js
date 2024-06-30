@@ -58,7 +58,7 @@ class CoCreateLazyLoader {
             }
 
             if (valideUrl.pathname.startsWith('/webhooks/')) {
-                let name = req.url.split('/')[2]; // Assuming URL structure is /webhook/name/...
+                let name = req.url.split('/')[2]; // Assuming URL structure is /webhooks/name/...
                 if (this.modules[name]) {
                     this.executeScriptWithTimeout(name, { req, res, host: hostname, organization, valideUrl, organization_id: organization._id })
                 } else {
