@@ -61,12 +61,16 @@ export async function lazyLoad(name, selector, callback) {
 }
 
 export async function dependency(name, promise) {
-    let component = await promise;
-    if (!window.CoCreate)
-        window.CoCreate = {}
+    try {
+        let component = await promise;
+        if (!window.CoCreate)
+            window.CoCreate = {}
 
-    window.CoCreate[name] = component.default || component
-    dispatchComponentLoaded(name)
+        window.CoCreate[name] = component.default || component
+        dispatchComponentLoaded(name)
+    } catch (error) {
+        console.error('error loading chunck: ', error)
+    }
 }
 
 function dispatchComponentLoaded(name) {
