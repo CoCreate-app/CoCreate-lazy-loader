@@ -1,3 +1,10 @@
+## [1.20.5](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.20.4...v1.20.5) (2024-08-24)
+
+
+### Bug Fixes
+
+* try catch dependency ([70b10f5](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/70b10f546bba430aea32c206bcb033945d986842))
+
 ## [1.20.4](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.20.3...v1.20.4) (2024-06-30)
 
 
