@@ -193,12 +193,22 @@ class CoCreateLazyLoader {
                 throw new Error(`Missing ${name} key in organization apis object`);
 
             // ToDo: if data.endpoint service not required as endpoint will be used
-            const service = require(config.path);
-            let instance
-            if (config.initialize)
-                instance = new service[config.initialize](key);
-            else
-                instance = new service(key);
+            let instance = require(config.path);
+
+            if (config.initialize) {
+                const initialize = config.initialize.split('.');
+
+                // Traverse the nested structure to reach the correct constructor
+                for (let i = 0; i < initialize.length; i++) {
+                    if (instance[initialize[i]]) {
+                        instance = instance[initialize[i]];
+                    } else {
+                        throw new Error(`Service path ${config.initialize} is incorrect at ${initialize[i]}`);
+                    }
+                }
+            }
+
+            instance = new instance(key);
 
             let params = [], mainParam = false
             for (let i = 0; true; i++) {
