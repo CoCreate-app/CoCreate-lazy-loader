@@ -1,3 +1,10 @@
+# [1.21.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.20.5...v1.21.0) (2024-08-30)
+
+
+### Features
+
+* handle nested initailization function ([c46b449](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/c46b4497936e61d4c932de664be70bbbf6e72f05))
+
 ## [1.20.5](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.20.4...v1.20.5) (2024-08-24)
 
 
