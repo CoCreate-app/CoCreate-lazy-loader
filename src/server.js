@@ -193,22 +193,50 @@ class CoCreateLazyLoader {
                 throw new Error(`Missing ${name} key in organization apis object`);
 
             // ToDo: if data.endpoint service not required as endpoint will be used
-            let instance = require(config.path);
+            let instance;
 
-            if (config.initialize) {
-                const initialize = config.initialize.split('.');
-
-                // Traverse the nested structure to reach the correct constructor
-                for (let i = 0; i < initialize.length; i++) {
-                    if (instance[initialize[i]]) {
-                        instance = instance[initialize[i]];
-                    } else {
-                        throw new Error(`Service path ${config.initialize} is incorrect at ${initialize[i]}`);
-                    }
+            // Try using require() first, for CommonJS modules
+            try {
+                instance = require(config.path);  // Attempt to require the module
+            } catch (err) {
+                if (err.code === 'ERR_REQUIRE_ESM') {
+                    // If it's an ESM module, fallback to dynamic import()
+                    instance = await import(config.path);
+                } else {
+                    throw err;  // Re-throw other errors
                 }
             }
 
-            instance = new instance(key);
+            if (config.initialize) {
+                if (Array.isArray(config.initialize)) {
+                    const initializations = []
+                    for (let i = 0; i < config.initialize.length; i++) {
+                        const initialize = config.initialize[i].split('.');
+                        initializations.push(instance)
+                        // Traverse the nested structure to reach the correct constructor
+                        for (let j = 0; j < initialize.length; j++) {
+                            if (initializations[i][initialize[j]]) {
+                                initializations[i] = initializations[i][initialize[j]];
+                            } else {
+                                throw new Error(`Service path ${config.initialize[i]} is incorrect at ${initialize[j]}`);
+                            }
+                        }
+                    }
+                    instance = new initializations[1](new initializations[0](key));
+                } else {
+                    const initialize = config.initialize.split('.');
+                    // Traverse the nested structure to reach the correct constructor
+                    for (let i = 0; i < initialize.length; i++) {
+                        if (instance[initialize[i]]) {
+                            instance = instance[initialize[i]];
+                        } else {
+                            throw new Error(`Service path ${config.initialize} is incorrect at ${initialize[i]}`);
+                        }
+                    }
+                }
+                instance = new instance(key);
+            } else
+                instance = new instance(key);
 
             let params = [], mainParam = false
             for (let i = 0; true; i++) {
