@@ -1,3 +1,10 @@
+# [1.22.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.21.0...v1.22.0) (2024-09-21)
+
+
+### Features
+
+* API initialization accepts an array to handle multi step initialization of third party APIS ([f5b07d0](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/f5b07d07b41652ed84a83ab1acaa97022000ac6f))
+
 # [1.21.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.20.5...v1.21.0) (2024-08-30)
 
 
