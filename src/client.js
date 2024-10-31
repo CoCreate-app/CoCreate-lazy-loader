@@ -21,7 +21,7 @@ function listen(name, callback, selector) {
     observer.init({
         name: 'lazyloadObserver',
         observe: ['childList'],
-        target: selector,
+        selector,
         callback: observerCallback
     })
 
@@ -47,7 +47,7 @@ function listen(name, callback, selector) {
             name: 'lazyloadAttributeObserver',
             observe: ['attributes'],
             attributeName: selectorAttributes,
-            target: selector,
+            selector,
             callback: observerCallback
         });
 
