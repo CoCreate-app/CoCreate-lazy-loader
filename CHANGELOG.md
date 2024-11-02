@@ -1,3 +1,10 @@
+## [1.22.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.22.0...v1.22.1) (2024-11-02)
+
+
+### Bug Fixes
+
+* observer taget has been renamed to selector ([259e5b6](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/259e5b6a161d32d7dd1194adf3b4b956958ebc4f))
+
 # [1.22.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.21.0...v1.22.0) (2024-09-21)
 
 
