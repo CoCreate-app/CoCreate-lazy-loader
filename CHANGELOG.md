@@ -1,3 +1,15 @@
+# [1.23.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.22.1...v1.23.0) (2024-11-04)
+
+
+### Bug Fixes
+
+* pretier.config.js and file formating ([ff182c2](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/ff182c259bd60ede33496ce69ab55ac821ef9657))
+
+
+### Features
+
+* add prettier.config.js and format files ([038200e](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/038200efbcd94bbc3c5dc318325cf271488c8bbb))
+
 ## [1.22.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.22.0...v1.22.1) (2024-11-02)
 
 
