@@ -1,3 +1,10 @@
+## [1.23.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.23.0...v1.23.1) (2024-12-09)
+
+
+### Bug Fixes
+
+* formating ([45845ab](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/45845abc2c4371b0952c5b747df10b55f3e90d6f))
+
 # [1.23.0](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.22.1...v1.23.0) (2024-11-04)
 
 
