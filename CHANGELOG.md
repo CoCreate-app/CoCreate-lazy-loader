@@ -1,3 +1,10 @@
+## [1.23.2](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.23.1...v1.23.2) (2024-12-22)
+
+
+### Bug Fixes
+
+* if (!window.CoCreate[name]) ([06f52b2](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/06f52b2f203d3860db065a786c095e8900d41508))
+
 ## [1.23.1](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.23.0...v1.23.1) (2024-12-09)
 
 
