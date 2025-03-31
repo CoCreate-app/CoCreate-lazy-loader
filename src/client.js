@@ -1,23 +1,26 @@
 import observer from "@cocreate/observer";
 
 function listen(name, callback, selector) {
-	async function observerCallback({ target }) {
+	const observerName = name + "LazyloadAddedNodesObserver";
+	async function observerCallback(mutation) {
+		observer.uninit(observerName);
+
 		if (!window.CoCreate) window.CoCreate = {};
 
 		if (window.CoCreate[name]) return;
 		window.CoCreate[name] = {};
-		observer.uninit(observerCallback);
+		// observer.uninit(name);
 
 		const module = await callback();
-		observer.uninit(observerCallback);
+		// observer.uninit(name);
 		window.CoCreate[name] = module.default || module;
 
 		dispatchComponentLoaded(name);
 	}
 
 	observer.init({
-		name: "lazyloadObserver",
-		observe: ["childList"],
+		name: observerName,
+		types: ["addedNodes"],
 		selector,
 		callback: observerCallback
 	});
@@ -39,9 +42,9 @@ function listen(name, callback, selector) {
 	}
 	if (selectorAttributes.length > 0)
 		observer.init({
-			name: "lazyloadAttributeObserver",
-			observe: ["attributes"],
-			attributeName: selectorAttributes,
+			name: observerName,
+			types: ["attributes"],
+			attributeFilter: selectorAttributes,
 			selector,
 			callback: observerCallback
 		});
