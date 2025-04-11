@@ -1,3 +1,10 @@
+## [1.23.3](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.23.2...v1.23.3) (2025-04-11)
+
+
+### Bug Fixes
+
+* update observer obseve param to type and and attributeName to attributeFilter ([cb6a6d4](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/cb6a6d40ea407c360a183fcff141ec7b210c7320))
+
 ## [1.23.2](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.23.1...v1.23.2) (2024-12-22)
 
 
