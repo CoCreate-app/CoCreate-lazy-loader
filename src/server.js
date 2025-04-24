@@ -3,7 +3,7 @@ const path = require("path");
 const { URL } = require("url");
 const vm = require("vm");
 const Config = require("@cocreate/config");
-const { getValueFromObject } = require("@cocreate/utils");
+const { getValueFromObject, objectToSearchParams } = require("@cocreate/utils");
 
 class CoCreateLazyLoader {
 	constructor(server, crud, files) {
@@ -26,12 +26,16 @@ class CoCreateLazyLoader {
 			throw error; // Halt execution if directory creation fails
 		}
 
+		this.wsManager.on("endpoint", (data) => {
+			this.executeEndpoint(data);
+		});
+
 		this.modules = await Config("modules", false, false);
 		if (!this.modules) return;
 		else this.modules = this.modules.modules;
 
 		for (let name of Object.keys(this.modules)) {
-			this.wsManager.on(this.modules[name].event, async (data) => {
+			this.wsManager.on(this.modules[name].event, (data) => {
 				this.executeScriptWithTimeout(name, data);
 			});
 		}
@@ -86,15 +90,238 @@ class CoCreateLazyLoader {
 		}
 	}
 
+	async executeEndpoint(data) {
+		try {
+			if (!data.method || !data.endpoint) {
+				throw new Error("Request missing 'method' or 'endpoint'.");
+			}
+
+			let name = data.method.split(".")[0];
+			let method = data.endpoint.split(" ")[0].toUpperCase();
+
+			data = await this.processOperators(data, "", name);
+
+			let apiConfig = await this.getApiConfig(data, name);
+			// --- Refined Validation ---
+			if (!apiConfig) {
+				throw new Error(`Configuration missing for API: '${name}'.`);
+			}
+			if (!apiConfig.url) {
+				throw new Error(
+					`Configuration error: Missing base url for API '${name}'.`
+				);
+			}
+			apiConfig = await this.processOperators(data, getApiConfig, "");
+
+			let override = apiConfig.endpoint?.[data.endpoint] || {};
+
+			let url = apiConfig.url; // Base URL
+			url = url.endsWith("/") ? url.slice(0, -1) : url;
+
+			let path = override.path || data.endpoint.split(" ")[1];
+			url += path.startsWith("/") ? path : `/${path}`;
+
+			url += objectToSearchParams(data[name].$searchParams);
+
+			// User's proposed simplification:
+			let headers = apiConfig.headers; // Default headers
+			if (override.headers) {
+				headers = { ...headers, ...override.headers }; // Correct idea for merging
+			}
+
+			let body = formatRequestBody(data[name]);
+
+			let options = { method, headers, body, timeout };
+
+			const response = await makeHttpRequest(url, options);
+			data[name] = parseResponse(response);
+
+			this.wsManager.send(data);
+		} catch (error) {
+			data.error = error.message;
+			if (data.req) {
+				data.res.writeHead(400, {
+					"Content-Type": "text/plain"
+				});
+				data.res.end(`Lazyload Error: ${error.message}`);
+			}
+			if (data.socket) {
+				this.wsManager.send(data);
+			}
+		}
+	}
+
+	/**
+	 * Formats the request body payload based on the specified format type.
+	 *
+	 * @param {object | string} payload The data intended for the request body.
+	 * @param {string} [formatType='json'] The desired format ('json', 'form-urlencoded', 'text', 'multipart', 'xml'). Defaults to 'json'.
+	 * @returns {{ body: string | Buffer | FormData | null, contentTypeHeader: string | null }}
+	 * An object containing the formatted body and the corresponding Content-Type header.
+	 * Returns null body/header on error or for unsupported types.
+	 */
+	formatRequestBody(payload, formatType = "json") {
+		let body = null;
+		let contentTypeHeader = null;
+
+		try {
+			switch (formatType.toLowerCase()) {
+				case "json":
+					body = JSON.stringify(payload);
+					contentTypeHeader = "application/json; charset=utf-8";
+					break;
+
+				case "form-urlencoded":
+					// In Node.js using querystring:
+					// const querystring = require('node:querystring');
+					// body = querystring.stringify(payload);
+					// Or using URLSearchParams (Node/Browser):
+					body = new URLSearchParams(payload).toString();
+					contentTypeHeader =
+						"application/x-www-form-urlencoded; charset=utf-8";
+					break;
+
+				case "text":
+					if (typeof payload === "string") {
+						body = payload;
+					} else if (
+						payload &&
+						typeof payload.toString === "function"
+					) {
+						// Attempt conversion for simple objects/values, might need refinement
+						body = payload.toString();
+					} else {
+						throw new Error(
+							"Payload must be a string or convertible to string for 'text' format."
+						);
+					}
+					contentTypeHeader = "text/plain; charset=utf-8";
+					break;
+
+				case "multipart":
+					// COMPLEX: Requires FormData (browser) or form-data library (Node)
+					// Needs specific logic to handle payload structure (identifying files vs fields)
+					// const formData = buildFormData(payload); // Placeholder for complex logic
+					// body = formData; // The FormData object itself or its stream
+					// contentTypeHeader = formData.getHeaders ? formData.getHeaders()['content-type'] : 'multipart/form-data; boundary=...'; // Header includes boundary
+					console.warn(
+						"Multipart formatting requires specific implementation."
+					);
+					// For now, return null or throw error
+					throw new Error(
+						"Multipart formatting not implemented in this basic function."
+					);
+					break; // Example: Not fully implemented here
+
+				case "xml":
+					// COMPLEX: Requires an XML serialization library
+					// const xmlString = convertObjectToXml(payload); // Placeholder
+					// body = xmlString;
+					console.warn(
+						"XML formatting requires an external library."
+					);
+					throw new Error(
+						"XML formatting not implemented in this basic function."
+					);
+					break; // Example: Not fully implemented here
+
+				default:
+					console.error(
+						`Unsupported requestBodyFormat: ${formatType}`
+					);
+					// Fallback or throw error
+					body = JSON.stringify(payload); // Default to JSON on unknown? Or error?
+					contentTypeHeader = "application/json; charset=utf-8";
+			}
+		} catch (error) {
+			console.error(
+				`Error formatting request body as ${formatType}:`,
+				error
+			);
+			return { body: null, contentTypeHeader: null }; // Return nulls on error
+		}
+
+		return { body, contentTypeHeader };
+	}
+
+	/**
+	 * Makes an HTTP request using node-fetch.
+	 * @param {string} url - The complete URL to request.
+	 * @param {string} method - The HTTP method (GET, POST, etc.).
+	 * @param {object} headers - The request headers object.
+	 * @param {string|Buffer|null|undefined} body - The formatted request body.
+	 * @param {number} timeout - Request timeout in milliseconds.
+	 * @returns {Promise<{status: number, data: any}>} - Resolves with status and parsed response data.
+	 * @throws {Error} If the request fails or returns a non-ok status.
+	 */
+	async makeHttpRequest(url, options) {
+		const controller = new this.server.AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), options.timeout);
+		options.signal = controller.signal;
+
+		// Remove Content-Type header if there's no body (relevant for GET, DELETE etc.)
+		if (
+			options.body === undefined &&
+			options.headers &&
+			options.headers["Content-Type"]
+		) {
+			delete options.headers["Content-Type"];
+		}
+
+		try {
+			const response = await this.server.fetch(url, options);
+			clearTimeout(timeoutId); // Request finished, clear timeout
+
+			if (!response.ok) {
+				// status >= 200 && status < 300
+				const error = new Error(
+					`HTTP error! Status: ${response.status} ${response.statusText}`
+				);
+				// Attach structured response info to the error
+				error.response = {
+					status: response.status,
+					statusText: response.statusText,
+					headers: Object.fromEntries(response.headers.entries()),
+					data: parseResponse(response) // Include parsed error body
+				};
+				throw error;
+			}
+			return response;
+		} catch (error) {
+			clearTimeout(timeoutId);
+			if (error.name === "AbortError") {
+				console.error(
+					`Request timed out after ${options.timeout}ms: ${options.method} ${url}`
+				);
+				throw new Error(
+					`Request Timeout: API call exceeded ${options.timeout}ms`
+				);
+			}
+
+			// If it already has response info (from !response.ok), rethrow it
+			if (error.response) {
+				throw error;
+			}
+			// Otherwise, wrap other errors (network, DNS, etc.)
+			console.error(
+				`Network/Request Error: ${options.method} ${url}`,
+				error
+			);
+			throw new Error(`Network/Request Error: ${error.message}`);
+		}
+	}
+
 	async executeScriptWithTimeout(name, data) {
 		try {
 			if (
 				this.modules[name].initialize ||
 				this.modules[name].initialize === ""
 			) {
-				if (data.req)
+				if (data.req) {
 					data = await this.webhooks(this.modules[name], data, name);
-				else data = await this.api(this.modules[name], data);
+				} else {
+					data = await this.api(this.modules[name], data);
+				}
 			} else {
 				if (!this.modules[name].content) {
 					if (this.modules[name].path)
@@ -124,7 +351,7 @@ class CoCreateLazyLoader {
 				}
 
 				if (this.modules[name].content) {
-					data.apis = await this.getApiKey(data, name);
+					data.apis = await this.getApiConfig(data, name);
 					data.crud = this.crud;
 					data = await this.modules[name].content.send(data);
 					delete data.apis;
@@ -218,7 +445,7 @@ class CoCreateLazyLoader {
 			const methodPath = data.method.split(".");
 			const name = methodPath.shift();
 
-			const apis = await this.getApiKey(data, name);
+			const apis = await this.getApiConfig(data, name);
 
 			const key = apis.key;
 			if (!key)
@@ -320,7 +547,7 @@ class CoCreateLazyLoader {
 
 	async webhooks(config, data, name) {
 		try {
-			const apis = await this.getApiKey(data, name);
+			const apis = await this.getApiConfig(data, name);
 
 			const key = apis.key;
 			if (!key)
@@ -568,7 +795,7 @@ class CoCreateLazyLoader {
 		return operator;
 	}
 
-	async getApiKey(data, name) {
+	async getApiConfig(data, name) {
 		let organization = await this.crud.getOrganization(data);
 		if (organization.error) throw new Error(organization.error);
 		if (!organization.apis)
