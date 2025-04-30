@@ -1,3 +1,15 @@
+## [1.23.4](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.23.3...v1.23.4) (2025-04-30)
+
+
+### Bug Fixes
+
+* added css-loader ([b0dd656](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/b0dd65637000ca8f910b72b278a3b1d4da011c24))
+* observer name creation to define for addedNodes and attributes ([b66cfb3](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/b66cfb3d2a2aacb26c732a2caffcecacd8e5c1ee))
+* testing executeEndpoint ([f1e208f](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/f1e208ff61493f0cfca796df1a8a5fefdd11ebf7))
+* update query attributes ([3059ea9](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/3059ea935d4be4d47b0f37d7f3496303c9426698))
+* updated cocreate modules versions ([d307fd9](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/d307fd9f9f5bdf6d8d35359de7e0b37a413b9e92))
+* webpack.config and devdependencies ([0e34c13](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/0e34c136ccd639362094af97c333bd0f8a715484))
+
 ## [1.23.3](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.23.2...v1.23.3) (2025-04-11)
 
 
