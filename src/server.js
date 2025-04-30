@@ -99,7 +99,7 @@ class CoCreateLazyLoader {
 			let name = data.method.split(".")[0];
 			let method = data.endpoint.split(" ")[0].toUpperCase();
 
-			data = await this.processOperators(data, "", name);
+			// data = await this.processOperators(data, "", name);
 
 			let apiConfig = await this.getApiConfig(data, name);
 			// --- Refined Validation ---
@@ -111,7 +111,7 @@ class CoCreateLazyLoader {
 					`Configuration error: Missing base url for API '${name}'.`
 				);
 			}
-			apiConfig = await this.processOperators(data, getApiConfig, "");
+			// apiConfig = await this.processOperators(data, getApiConfig, "");
 
 			let override = apiConfig.endpoint?.[data.endpoint] || {};
 
@@ -255,6 +255,10 @@ class CoCreateLazyLoader {
 	 * @throws {Error} If the request fails or returns a non-ok status.
 	 */
 	async makeHttpRequest(url, options) {
+		if (!this.server.AbortController) {
+			console.log("makeHttpRequest test");
+			return {};
+		}
 		const controller = new this.server.AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), options.timeout);
 		options.signal = controller.signal;
