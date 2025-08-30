@@ -47,8 +47,8 @@ class CoCreateLazyLoader {
 	async request(req, res) {
 		try {
 			// TODO: track usage
-			const valideUrl = new URL(`http://${req.headers.host}${req.url}`);
-			const hostname = valideUrl.hostname;
+			const urlObject = new URL(`http://${req.headers.host}${req.url}`);
+			const hostname = urlObject.hostname;
 			let organization;
 
 			try {
@@ -61,11 +61,11 @@ class CoCreateLazyLoader {
 					res,
 					this.crud,
 					organization,
-					valideUrl
+					urlObject
 				);
 			}
 
-			if (valideUrl.pathname.startsWith("/webhooks/")) {
+			if (urlObject.pathname.startsWith("/webhooks/")) {
 				let name = req.url.split("/")[2]; // Assuming URL structure is /webhooks/name/...
 				if (this.modules[name]) {
 					this.executeScriptWithTimeout(name, {
@@ -73,7 +73,7 @@ class CoCreateLazyLoader {
 						res,
 						host: hostname,
 						organization,
-						valideUrl,
+						urlObject,
 						organization_id: organization._id
 					});
 				} else {
@@ -82,7 +82,7 @@ class CoCreateLazyLoader {
 					res.end(JSON.stringify({ error: "Not found" }));
 				}
 			} else {
-				this.files.send(req, res, this.crud, organization, valideUrl);
+				this.files.send(req, res, this.crud, organization, urlObject);
 			}
 		} catch (error) {
 			res.writeHead(400, { "Content-Type": "text/plain" });
