@@ -129,21 +129,47 @@ class CoCreateLazyLoader {
 				headers = { ...headers, ...override.headers }; // Correct idea for merging
 			}
 
-			let body = formatRequestBody(data[name]);
+			// let body = formatRequestBody(data[name]);
 
-			let options = { method, headers, body, timeout };
+			let formatType = data.formatType || "json";
+			const timeout = 10000; // Set default timeout in ms (e.g., 10 seconds)
+			let options = { method, headers, timeout };
 
-			const response = await makeHttpRequest(url, options);
-			data[name] = parseResponse(response);
+			// Only add body for methods that support it (not GET or HEAD)
+			if (!["GET", "HEAD"].includes(method)) {
+				let { body } = this.formatRequestBody(data[name], formatType);
+				options.body = body;
+			}
+			// For GET/HEAD, do not create or send a body; all params should be in the URL
+
+			const response = await this.makeHttpRequest(url, options);
+
+			// If the response is not ok, makeHttpRequest will throw and be caught below.
+			// If you want to include more info in the error, you can log or attach response details here.
+
+			data[name] = await response.json();
 
 			this.wsManager.send(data);
 		} catch (error) {
+			// Add more detail to the error for debugging 404s
 			data.error = error.message;
+			if (error.response) {
+				data.status = error.response.status;
+				data.statusText = error.response.statusText;
+				data.responseData = error.response.data;
+			}
 			if (data.req) {
 				data.res.writeHead(400, {
-					"Content-Type": "text/plain"
+					"Content-Type": "application/json"
 				});
-				data.res.end(`Lazyload Error: ${error.message}`);
+				data.res.end(
+					JSON.stringify({
+						error: data.error,
+						status: data.status,
+						statusText: data.statusText,
+						responseData: data.responseData
+					})
+				);
 			}
 			if (data.socket) {
 				this.wsManager.send(data);
@@ -255,13 +281,12 @@ class CoCreateLazyLoader {
 	 * @throws {Error} If the request fails or returns a non-ok status.
 	 */
 	async makeHttpRequest(url, options) {
-		if (!this.server.AbortController) {
-			console.log("makeHttpRequest test");
-			return {};
+		let controller, timeoutId;
+		if (this.server.AbortController) {
+			controller = new this.server.AbortController();
+			timeoutId = setTimeout(() => controller.abort(), options.timeout);
+			options.signal = controller.signal;
 		}
-		const controller = new this.server.AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), options.timeout);
-		options.signal = controller.signal;
 
 		// Remove Content-Type header if there's no body (relevant for GET, DELETE etc.)
 		if (
@@ -272,46 +297,32 @@ class CoCreateLazyLoader {
 			delete options.headers["Content-Type"];
 		}
 
+		const fetchFn = this.server.fetch || global.fetch;
+		if (typeof fetchFn !== "function") {
+			throw new Error("No fetch implementation available.");
+		}
+
 		try {
-			const response = await this.server.fetch(url, options);
-			clearTimeout(timeoutId); // Request finished, clear timeout
+			const response = await fetchFn(url, options);
+			if (timeoutId) clearTimeout(timeoutId);
 
 			if (!response.ok) {
-				// status >= 200 && status < 300
+				const text = await response.text();
 				const error = new Error(
 					`HTTP error! Status: ${response.status} ${response.statusText}`
 				);
-				// Attach structured response info to the error
 				error.response = {
 					status: response.status,
 					statusText: response.statusText,
 					headers: Object.fromEntries(response.headers.entries()),
-					data: parseResponse(response) // Include parsed error body
+					data: text
 				};
 				throw error;
 			}
 			return response;
 		} catch (error) {
-			clearTimeout(timeoutId);
-			if (error.name === "AbortError") {
-				console.error(
-					`Request timed out after ${options.timeout}ms: ${options.method} ${url}`
-				);
-				throw new Error(
-					`Request Timeout: API call exceeded ${options.timeout}ms`
-				);
-			}
-
-			// If it already has response info (from !response.ok), rethrow it
-			if (error.response) {
-				throw error;
-			}
-			// Otherwise, wrap other errors (network, DNS, etc.)
-			console.error(
-				`Network/Request Error: ${options.method} ${url}`,
-				error
-			);
-			throw new Error(`Network/Request Error: ${error.message}`);
+			if (timeoutId) clearTimeout(timeoutId);
+			throw error;
 		}
 	}
 
