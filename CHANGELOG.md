@@ -1,3 +1,11 @@
+## [1.23.6](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.23.5...v1.23.6) (2025-09-01)
+
+
+### Bug Fixes
+
+* improve request handling and error reporting in executeEndpoint ([b452259](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/b452259fb28b97421badf7aeb21c24d99d5599c0))
+* replace valideUrl with urlObject for URL handling consistency ([d53fe8a](https://github.com/CoCreate-app/CoCreate-lazy-loader/commit/d53fe8a78f2120805c1a9a60a72a5ac13bb361be))
+
 ## [1.23.5](https://github.com/CoCreate-app/CoCreate-lazy-loader/compare/v1.23.4...v1.23.5) (2025-05-01)
 
 
