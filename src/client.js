@@ -52,6 +52,7 @@ function listen(name, callback, selector) {
 		});
 }
 
+// ToDo: accept an array of items and lazyLoad or load then fire CoCreateLoaded event
 export async function lazyLoad(name, selector, callback) {
 	if (document.querySelector(selector)) {
 		await dependency(name, await callback());
